@@ -1,38 +1,33 @@
-import { StyleSheet, Text, View, Button, TextInput } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Button,
+  TextInput,
+  Keyboard,
+  KeyboardAvoidingView,
+  TouchableWithoutFeedback,
+  ImageBackground
+} from "react-native";
 import React, { useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import { RouterConstant } from "../../constants/RouterConstant";
+import CustomButton from "../../components/CustomButton";
+import { showToast } from "../../utils/Toast";
 
 const SignupScreen = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const navigation = useNavigation();
-  const [error, setError] = useState(null); // State for error messages
 
   const handleSignup = async () => {
-    setError(null); // Clear any previous errors
-
     if (!username || !password) {
-      setError("Username and password are required.");
+      showToast("Username and password are required.");
       return;
     }
-
-    try {
-      // Simulate API call (replace with your actual API call)
-      // const response = await simulateSignup(username, password); // See function below
-
-      if (true) {
-        //response.success
-        await AsyncStorage.setItem("isLoggedIn", JSON.stringify(true));
-        navigation.replace(RouterConstant.HOME);
-      } else {
-        setError(response.message || "Signup failed. Please try again.");
-      }
-    } catch (err) {
-      console.error("Signup error:", err);
-      setError("An error occurred during signup.");
-    }
+    await AsyncStorage.setItem("isLoggedIn", JSON.stringify(true));
+    navigation.replace(RouterConstant.HOME);
   };
 
   const simulateSignup = async (username, password) => {
@@ -48,48 +43,87 @@ const SignupScreen = () => {
     });
   };
 
+  const image = {
+    uri:
+      "https://cdn.pixabay.com/photo/2014/10/18/22/01/remote-login-mast-493768_640.jpg"
+  };
+
   return (
-    <View style={styles.container}>
-      <TextInput
-        style={styles.input}
-        placeholder="Username"
-        value={username}
-        onChangeText={setUsername}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry // Hide password
-      />
-      {error &&
-        <Text style={styles.errorText}>
-          {error}
-        </Text>}{" "}
-      {/* Display error */}
-      <Button title="Sign Up" onPress={handleSignup} />
-    </View>
+    <ImageBackground source={image} style={styles.backgroundImage}>
+      <KeyboardAvoidingView style={styles.container} behavior="padding">
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <View style={styles.innerContainer}>
+            <Text style={styles.title}>Login</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Username"
+              value={username}
+              onChangeText={setUsername}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Password"
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry
+            />
+
+            <CustomButton title={"Login"} onPress={() => handleSignup()} />
+          </View>
+        </TouchableWithoutFeedback>
+      </KeyboardAvoidingView>
+    </ImageBackground>
   );
 };
 
 export default SignupScreen;
 
 const styles = StyleSheet.create({
+  backgroundImage: {
+    flex: 1,
+    resizeMode: "cover",
+    justifyContent: "center"
+  },
   container: {
     flex: 1,
     justifyContent: "center",
-    padding: 20
+    alignItems: "center"
+  },
+  innerContainer: {
+    width: "90%",
+    backgroundColor: "white",
+    borderRadius: 10,
+    padding: 20,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.8,
+    shadowRadius: 2,
+    elevation: 5
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 20,
+    textAlign: "center"
   },
   input: {
     height: 40,
-    borderColor: "gray",
+    borderColor: "#ccc",
     borderWidth: 1,
-    marginBottom: 10,
+    borderRadius: 5,
+    marginBottom: 15,
     paddingHorizontal: 10
   },
-  errorText: {
-    color: "red",
-    marginBottom: 10
+  button: {
+    backgroundColor: "#007BFF",
+    padding: 10,
+    borderRadius: 5,
+    alignItems: "center"
+  },
+  buttonText: {
+    color: "white",
+    fontSize: 16,
+
+    fontWeight: "bold"
   }
 });

@@ -1,14 +1,14 @@
 import { StyleSheet, Text, View } from "react-native";
 import React from "react";
 
-const Dummy1 = () => {
+const CreateTask = () => {
   return (
     <View>
-      <Text>Dummy1</Text>
+      <Text>CreateTask</Text>
     </View>
   );
 };
 
-export default Dummy1;
+export default CreateTask;
 
 const styles = StyleSheet.create({});

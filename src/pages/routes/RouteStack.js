@@ -7,6 +7,7 @@ import { RouterConstant } from "../../constants/RouterConstant";
 import SignupScreen from "../auth/Signup";
 import Home from "../Home";
 import BottomTabBar from "./BottomTabBar";
+import MyTasks from "../Task/MyTasks";
 
 const Stack = createNativeStackNavigator();
 
@@ -48,8 +49,13 @@ export const RouteStack = () => {
           component={BottomTabBar}
           options={{ headerShown: false }}
         />
-        <Stack.Screen name={RouterConstant.SIGNUP} component={SignupScreen} />
+        <Stack.Screen
+          name={RouterConstant.SIGNUP}
+          component={SignupScreen}
+          options={{ headerShown: false }}
+        />
         <Stack.Screen name={RouterConstant.SPLASH} component={SplashScreen} />
+        <Stack.Screen name={RouterConstant.MYTASK} component={MyTasks} />
       </Stack.Navigator>
     </NavigationContainer>
   );
