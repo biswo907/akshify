@@ -40,12 +40,10 @@ export const RouteStack = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName={
-          isLoggedIn ? RouterConstant.HOME : RouterConstant.SIGNUP
-        }
+        initialRouteName={isLoggedIn ? "Home" : RouterConstant.SIGNUP}
       >
         <Stack.Screen
-          name={RouterConstant.HOME}
+          name={"Home"}
           component={BottomTabBar}
           options={{ headerShown: false }}
         />

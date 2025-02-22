@@ -5,6 +5,7 @@ import Home from "../Home";
 import Profile from "../Profile";
 import CreateTask from "../Task/CreateTask";
 import { Ionicons } from "@expo/vector-icons"; // Import Ionicons
+import { RouterConstant } from "../../constants/RouterConstant";
 
 const Tab = createBottomTabNavigator();
 
@@ -16,11 +17,11 @@ const BottomTabBar = () => {
           let iconName;
 
           // Set icon name based on the route
-          if (route.name === "Home") {
+          if (route.name === RouterConstant.HOME) {
             iconName = focused ? "home" : "home-outline";
-          } else if (route.name === "Create") {
+          } else if (route.name === RouterConstant.CREATE) {
             iconName = focused ? "add-circle" : "add-circle-outline";
-          } else if (route.name === "Profile") {
+          } else if (route.name === RouterConstant.PROFILE) {
             iconName = focused ? "person" : "person-outline";
           }
 
@@ -51,9 +52,9 @@ const BottomTabBar = () => {
         headerShown: false
       })}
     >
-      <Tab.Screen name="Home" component={Home} />
-      <Tab.Screen name="Create" component={CreateTask} />
-      <Tab.Screen name="Profile" component={Profile} />
+      <Tab.Screen name={RouterConstant.HOME} component={Home} />
+      <Tab.Screen name={RouterConstant.CREATE} component={CreateTask} />
+      <Tab.Screen name={RouterConstant.PROFILE} component={Profile} />
     </Tab.Navigator>
   );
 };

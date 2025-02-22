@@ -2,12 +2,12 @@ import {
   StyleSheet,
   Text,
   View,
-  Button,
   TextInput,
   Keyboard,
   KeyboardAvoidingView,
   TouchableWithoutFeedback,
-  ImageBackground
+  ImageBackground,
+  TouchableOpacity
 } from "react-native";
 import React, { useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -15,10 +15,12 @@ import { useNavigation } from "@react-navigation/native";
 import { RouterConstant } from "../../constants/RouterConstant";
 import CustomButton from "../../components/CustomButton";
 import { showToast } from "../../utils/Toast";
+import Icon from "react-native-vector-icons/Feather"; // Import icon
 
 const SignupScreen = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false); // State for toggling password visibility
   const navigation = useNavigation();
 
   const handleSignup = async () => {
@@ -26,26 +28,16 @@ const SignupScreen = () => {
       showToast("Username and password are required.");
       return;
     }
-    await AsyncStorage.setItem("isLoggedIn", JSON.stringify(true));
-    navigation.replace(RouterConstant.HOME);
-  };
-
-  const simulateSignup = async (username, password) => {
-    // Replace this with your actual API call
-    return new Promise(resolve => {
-      setTimeout(() => {
-        if (username === "testuser" && password === "password") {
-          resolve({ success: true });
-        } else {
-          resolve({ success: false, message: "Invalid username or password" });
-        }
-      }, 1000); // Simulate a 1-second API call
-    });
+    if (username === "biswo@gmail.com" && password === "Biswo@123") {
+      await AsyncStorage.setItem("isLoggedIn", JSON.stringify(true));
+      navigation.replace(RouterConstant.HOME);
+    } else {
+      showToast("Access denied. Wrong credentials.");
+    }
   };
 
   const image = {
-    uri:
-      "https://cdn.pixabay.com/photo/2014/10/18/22/01/remote-login-mast-493768_640.jpg"
+    uri: `https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRGTAKuHtTIBATCYZ_VkurIx1bN9rE3Sr9xGw&s`
   };
 
   return (
@@ -54,21 +46,37 @@ const SignupScreen = () => {
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <View style={styles.innerContainer}>
             <Text style={styles.title}>Login</Text>
+
+            {/* Username Input */}
             <TextInput
               style={styles.input}
               placeholder="Username"
               value={username}
               onChangeText={setUsername}
             />
-            <TextInput
-              style={styles.input}
-              placeholder="Password"
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry
-            />
 
-            <CustomButton title={"Login"} onPress={() => handleSignup()} />
+            {/* Password Input with Toggle */}
+            <View style={styles.passwordContainer}>
+              <TextInput
+                style={styles.passwordInput}
+                placeholder="Password"
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry={!isPasswordVisible}
+              />
+              <TouchableOpacity
+                onPress={() => setIsPasswordVisible(!isPasswordVisible)}
+                style={styles.eyeIcon}
+              >
+                <Icon
+                  name={isPasswordVisible ? "eye" : "eye-off"}
+                  size={14}
+                  color="#666"
+                />
+              </TouchableOpacity>
+            </View>
+
+            <CustomButton title={"Login"} onPress={handleSignup} />
           </View>
         </TouchableWithoutFeedback>
       </KeyboardAvoidingView>
@@ -114,16 +122,20 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     paddingHorizontal: 10
   },
-  button: {
-    backgroundColor: "#007BFF",
-    padding: 10,
+  passwordContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderColor: "#ccc",
+    borderWidth: 1,
     borderRadius: 5,
-    alignItems: "center"
+    marginBottom: 15,
+    paddingHorizontal: 10
   },
-  buttonText: {
-    color: "white",
-    fontSize: 16,
-
-    fontWeight: "bold"
+  passwordInput: {
+    flex: 1,
+    height: 40
+  },
+  eyeIcon: {
+    padding: 8
   }
 });

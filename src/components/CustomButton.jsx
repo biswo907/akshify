@@ -7,7 +7,7 @@ const CustomButton = ({ onPress, title }) => {
     <View style={styles.wrapper}>
       <TouchableOpacity onPress={onPress} activeOpacity={0.7}>
         <LinearGradient
-          colors={["red", "blue"]}
+          colors={["#5F33E1", "#A655E3", "#EDE7FF"]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
           style={styles.linearGradient}
@@ -27,7 +27,7 @@ const styles = StyleSheet.create({
   },
   linearGradient: {
     width: "100%",
-    height: 40,
+    height: 45,
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 10
