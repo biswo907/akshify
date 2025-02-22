@@ -30,7 +30,7 @@ const SignupScreen = () => {
     }
     if (username === "biswo@gmail.com" && password === "Biswo@123") {
       await AsyncStorage.setItem("isLoggedIn", JSON.stringify(true));
-      navigation.replace(RouterConstant.HOME);
+      navigation.replace("Home");
     } else {
       showToast("Access denied. Wrong credentials.");
     }

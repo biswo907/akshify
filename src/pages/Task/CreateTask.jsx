@@ -9,10 +9,11 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   Alert,
-  ScrollView
+  ScrollView,
+  Platform
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { LinearGradient } from "expo-linear-gradient";
+import DateTimePicker from "@react-native-community/datetimepicker";
 import CustomButton from "../../components/CustomButton";
 import { screenWidth } from "../../utils/dimensions";
 import { useIsFocused, useNavigation } from "@react-navigation/native";
@@ -22,11 +23,14 @@ import { showToast } from "../../utils/Toast";
 const CreateTask = () => {
   const [taskSubject, setTaskSubject] = useState("");
   const [description, setDescription] = useState("");
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+  const [showStartDatePicker, setShowStartDatePicker] = useState(false);
+  const [showEndDatePicker, setShowEndDatePicker] = useState(false);
 
   const isFocused = useIsFocused();
   const navigation = useNavigation();
+  const today = new Date(); // Get today's date
 
   const handleSaveTask = async () => {
     if (!taskSubject || !description || !startDate || !endDate) {
@@ -37,8 +41,8 @@ const CreateTask = () => {
     const newTask = {
       taskSubject,
       description,
-      startDate,
-      endDate
+      startDate: startDate.toISOString().split("T")[0], // Format Date
+      endDate: endDate.toISOString().split("T")[0]
     };
 
     try {
@@ -56,11 +60,10 @@ const CreateTask = () => {
   };
 
   const clearFields = () => {
-    // Clear inputs after saving
     setTaskSubject("");
     setDescription("");
-    setStartDate("");
-    setEndDate("");
+    setStartDate(null);
+    setEndDate(null);
   };
 
   useEffect(() => {
@@ -92,24 +95,61 @@ const CreateTask = () => {
             multiline
           />
 
-          {/* Start Date */}
-          <TextInput
+          {/* Start Date Picker */}
+          <TouchableOpacity
             style={styles.input}
-            placeholder="Start Date (YYYY-MM-DD)"
-            value={startDate}
-            onChangeText={setStartDate}
-          />
+            onPress={() => setShowStartDatePicker(true)}
+          >
+            <Text style={{ color: startDate ? "#000" : "#999" }}>
+              {startDate
+                ? startDate.toISOString().split("T")[0]
+                : "Select Start Date"}
+            </Text>
+          </TouchableOpacity>
+          {showStartDatePicker && (
+            <DateTimePicker
+              value={startDate || today} // Default picker to today
+              mode="date"
+              minimumDate={today} // Restrict past dates
+              display={Platform.OS === "ios" ? "spinner" : "default"}
+              onChange={(event, selectedDate) => {
+                setShowStartDatePicker(false);
+                if (selectedDate) {
+                  setStartDate(selectedDate);
+                }
+              }}
+            />
+          )}
 
-          {/* End Date */}
-          <TextInput
+          {/* End Date Picker */}
+          <TouchableOpacity
             style={styles.input}
-            placeholder="End Date (YYYY-MM-DD)"
-            value={endDate}
-            onChangeText={setEndDate}
-          />
+            onPress={() => setShowEndDatePicker(true)}
+            disabled={!startDate} // Disable until Start Date is selected
+          >
+            <Text style={{ color: endDate ? "#000" : "#999" }}>
+              {endDate
+                ? endDate.toISOString().split("T")[0]
+                : "Select End Date"}
+            </Text>
+          </TouchableOpacity>
+          {showEndDatePicker && (
+            <DateTimePicker
+              value={endDate || startDate || today} // Default to start date
+              mode="date"
+              minimumDate={startDate || today} // Restrict to start date or later
+              display={Platform.OS === "ios" ? "spinner" : "default"}
+              onChange={(event, selectedDate) => {
+                setShowEndDatePicker(false);
+                if (selectedDate) {
+                  setEndDate(selectedDate);
+                }
+              }}
+            />
+          )}
 
           {/* Save Button */}
-          <CustomButton onPress={handleSaveTask} title={`Create Task`} />
+          <CustomButton onPress={handleSaveTask} title="Create Task" />
           <View style={styles.buttonWrapper} />
         </ScrollView>
       </TouchableWithoutFeedback>
@@ -122,7 +162,7 @@ export default CreateTask;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#303030",
+    backgroundColor: "#5F33E1",
     justifyContent: "center",
     alignItems: "center"
   },
@@ -134,7 +174,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: "bold",
-    color: "#5F33E1",
+    color: "white",
     marginBottom: 20,
     textAlign: "center"
   },
@@ -145,26 +185,12 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginBottom: 15,
     paddingHorizontal: 15,
-    backgroundColor: "#fff"
+    backgroundColor: "#fff",
+    justifyContent: "center"
   },
   textArea: {
     height: 100,
     textAlignVertical: "top"
-  },
-  buttonContainer: {
-    marginTop: 10,
-    borderRadius: 10,
-    overflow: "hidden"
-  },
-  button: {
-    paddingVertical: 15,
-    alignItems: "center",
-    borderRadius: 10
-  },
-  buttonText: {
-    color: "white",
-    fontSize: 18,
-    fontWeight: "bold"
   },
   buttonWrapper: {
     height: 130,
