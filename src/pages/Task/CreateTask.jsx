@@ -52,7 +52,7 @@ const CreateTask = () => {
 
       await AsyncStorage.setItem("tasks", JSON.stringify(tasks));
       showToast("Task saved successfully!");
-      navigation.navigate(RouterConstant.HOME);
+      navigation.navigate(RouterConstant.MYTASK);
       clearFields();
     } catch (error) {
       console.error("Error saving task:", error);

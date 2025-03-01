@@ -16,6 +16,15 @@ import { RouterConstant } from "../../constants/RouterConstant";
 import CustomButton from "../../components/CustomButton";
 import { showToast } from "../../utils/Toast";
 import Icon from "react-native-vector-icons/Feather"; // Import icon
+import { StatusBar } from "expo-status-bar";
+import { GoogleSignin } from "@react-native-google-signin/google-signin";
+
+GoogleSignin.configure({
+  webClientId: `716771364474-1q7n55h7phgrej82ionuiehi2mnt4j5i.apps.googleusercontent.com`,
+  scopes: ["https://www.googleapis.com/auth/drive.readonly"],
+  offlineAccess: true,
+  forceCodeForRefreshToken: true
+});
 
 const SignupScreen = () => {
   const [username, setUsername] = useState("");
@@ -24,6 +33,8 @@ const SignupScreen = () => {
   const navigation = useNavigation();
 
   const handleSignup = async () => {
+    console.log("Calll");
+
     if (!username || !password) {
       showToast("Username and password are required.");
       return;
@@ -42,6 +53,7 @@ const SignupScreen = () => {
 
   return (
     <ImageBackground source={image} style={styles.backgroundImage}>
+      <StatusBar translucent />
       <KeyboardAvoidingView style={styles.container} behavior="padding">
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <View style={styles.innerContainer}>
@@ -77,6 +89,13 @@ const SignupScreen = () => {
             </View>
 
             <CustomButton title={"Login"} onPress={handleSignup} />
+
+            {/* <GoogleSigninButton
+              style={styles.googleButton}
+              size={GoogleSigninButton.Size.Wide}
+              color={GoogleSigninButton.Color.Dark}
+              onPress={signIn}
+            /> */}
           </View>
         </TouchableWithoutFeedback>
       </KeyboardAvoidingView>
@@ -137,5 +156,10 @@ const styles = StyleSheet.create({
   },
   eyeIcon: {
     padding: 8
+  },
+  googleButton: {
+    width: "100%",
+    height: 48,
+    marginTop: 20
   }
 });

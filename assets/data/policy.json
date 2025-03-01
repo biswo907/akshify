@@ -1,0 +1,48 @@
+{
+  "title": "Privacy Policy",
+  "updatedDate": "Last Updated: March 2, 2025",
+  "sections": [
+    {
+      "title": "1. Information We Collect",
+      "content": [
+        "When you use Akshify, we may collect the following types of information:",
+        "• Personal Information: Name, email address, and contact details.",
+        "• Usage Data: App interactions, task progress, and features used.",
+        "• Device Information: IP address, OS version, and device type."
+      ]
+    },
+    {
+      "title": "2. How We Use Your Information",
+      "content": [
+        "We use your data to:",
+        "✔ Improve task management and productivity features.",
+        "✔ Send notifications about tasks and updates.",
+        "✔ Enhance security and prevent unauthorized access."
+      ]
+    },
+    {
+      "title": "3. Data Protection & Security",
+      "content": [
+        "We prioritize data security and employ:",
+        "🔒 End-to-end encryption for sensitive data.",
+        "🔒 Regular security audits to prevent data breaches."
+      ]
+    },
+    {
+      "title": "4. Your Rights",
+      "content": [
+        "You have the right to:",
+        "📜 Request access to your personal data.",
+        "📜 Request deletion or correction of inaccurate data.",
+        "📜 Opt out of marketing communications."
+      ]
+    },
+    {
+      "title": "5. Changes to this Policy",
+      "content": [
+        "We may update this Privacy Policy periodically. Any significant changes will be notified to you within the app."
+      ]
+    }
+  ],
+  "footerNote": "If you have any questions, contact us at support@akshify.com."
+}

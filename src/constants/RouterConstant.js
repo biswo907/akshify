@@ -4,5 +4,9 @@ export const RouterConstant = {
   HOME: "home",
   CREATE: "create",
   PROFILE: "profile",
-  MYTASK: "mytask"
+  MYTASK: "mytask",
+  POLICY: "policy",
+  NOTIFICATION: "notification",
+  HELP: "help",
+  ABOUT: "about"
 };

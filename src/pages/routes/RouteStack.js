@@ -8,6 +8,10 @@ import SignupScreen from "../auth/Signup";
 import Home from "../Home";
 import BottomTabBar from "./BottomTabBar";
 import MyTasks from "../Task/MyTasks";
+import Policy from "../Policy";
+import Notification from "../Notification";
+import Help from "../Help";
+import About from "../About";
 
 const Stack = createNativeStackNavigator();
 
@@ -53,7 +57,32 @@ export const RouteStack = () => {
           options={{ headerShown: false }}
         />
         <Stack.Screen name={RouterConstant.SPLASH} component={SplashScreen} />
-        <Stack.Screen name={RouterConstant.MYTASK} component={MyTasks} />
+
+        <Stack.Screen
+          name={RouterConstant.MYTASK}
+          component={MyTasks}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name={RouterConstant.POLICY}
+          component={Policy}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name={RouterConstant.NOTIFICATION}
+          component={Notification}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name={RouterConstant.HELP}
+          component={Help}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name={RouterConstant.ABOUT}
+          component={About}
+          options={{ headerShown: false }}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -1,19 +1,34 @@
-import React from "react";
-import {
-  StyleSheet,
-  Text,
-  View,
-  TouchableOpacity,
-  Image,
-  Alert
-} from "react-native";
-import { useNavigation } from "@react-navigation/native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { RouterConstant } from "../constants/RouterConstant";
 
-const Profile = () => {
+
+/* eslint-disable react-native/no-inline-styles */
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  ActivityIndicator,
+  StyleSheet,
+  FlatList,
+  ScrollView,
+  SafeAreaView,
+  StatusBar,
+} from 'react-native';
+// import {userAvtar} from '../../utils/Images';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import {useNavigation} from '@react-navigation/native';
+import AntDesign from '@expo/vector-icons/AntDesign';
+import { LinearGradient } from 'expo-linear-gradient';
+import { RouterConstant } from '../constants/RouterConstant';
+import ConfirmationModal from '../shared/ConfirmationModal';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+
+const ProfileScreen = () => {
+  const insets = useSafeAreaInsets();
   const navigation = useNavigation();
+
+  const [isVisible,setIsVisible] = useState(false);
 
   const handleLogout = async () => {
     try {
@@ -24,91 +39,203 @@ const Profile = () => {
     }
   };
 
+  const settingsData = [
+    { id: 1, title: 'My Tasks', subTitle: 'Organize and track tasks', icon: 'user', route: RouterConstant.MYTASK },
+    { id: 2, title: 'Settings', subTitle: 'Manage your app settings', icon: 'setting' },
+    { id: 3, title: 'Theme', subTitle: 'Change your app theme', icon: 'skin' },
+    { id: 4, title: 'Language', subTitle: 'Change app language', icon: 'earth' },
+    { id: 5, title: 'Notifications', subTitle: 'Manage notifications', icon: 'notification', route: RouterConstant.NOTIFICATION },
+    { id: 6, title: 'Privacy & Security', subTitle: 'Manage privacy settings', icon: 'lock', route: RouterConstant.POLICY },
+    { id: 7, title: 'Help & Support', subTitle: 'Get help', icon: 'questioncircleo', route: RouterConstant.HELP },
+    { id: 8, title: 'About', subTitle: 'Learn more', icon: 'infocirlceo', route: RouterConstant.ABOUT },
+    { id: 9, title: 'Logout', subTitle: 'Sign out of your account', icon: 'logout' },
+  ];
+
   return (
-    <SafeAreaView style={styles.container}>
-      {/* Profile Avatar */}
-      <View style={styles.profileContainer}>
-        <Image
-          source={{
-            uri: "https://cdn-icons-png.flaticon.com/512/149/149071.png"
-          }}
-          style={styles.profileImage}
-        />
-        <Text style={styles.userName}>Biswajit Dash</Text>
-        <Text style={styles.userEmail}>biswajitdash907@gmail.com</Text>
+    <View style={{flex: 1}}>
+      <StatusBar translucent  backgroundColor="transparent" barStyle={'light-content'} />
+      <LinearGradient
+        colors={["#5F33E1", "#9A66E8"]}
+        start={{x: 0, y: 0}}
+        end={{x: 1, y: 0}}
+        style={styles.header}>
+        <View
+          style={{
+            paddingTop: insets.top,
+            paddingBottom: 10,
+            paddingHorizontal: 16,
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}>
+          <View
+            style={{
+              flexDirection: 'row',
+              gap: 10,
+              alignItems: 'center',
+            }}>
+            <Image source={{uri:'https://img.freepik.com/free-vector/isolated-young-handsome-man-different-poses-white-background-illustration_632498-846.jpg?ga=GA1.1.29524733.1691785299&semt=ais_hybrid'}} style={styles.userImage} />
+
+            <View>
+              <Text style={{color: 'white', fontSize: 16, fontWeight: '600'}}>
+                Hello !!
+              </Text>
+              <Text style={{color: 'white', fontSize: 14, fontWeight: '400'}}>
+                Biswo
+              </Text>
+            </View>
+          </View>
+          <View>
+            <AntDesign name="edit" size={24} color="white" />
+          </View>
+        </View>
+      </LinearGradient>
+      <View style={{flex: 1, backgroundColor: '#f0f0f0'}}>
+        <View
+          style={{
+            marginBottom: 80,
+            marginTop: 20,
+            marginHorizontal:20,
+            backgroundColor: 'white',
+            borderRadius: 20,
+            elevation: 5,
+            shadowColor: '#000',
+            shadowOpacity: 0.2,
+            shadowRadius: 5,
+          }}>
+          <FlatList
+            showsVerticalScrollIndicator={false}
+            data={settingsData}
+            keyExtractor={item => item.id.toString()}
+            renderItem={({item,index}) => (
+              <TouchableOpacity
+                // disabled={!item?.route}
+                style={{
+                  padding: 15,
+                  borderBottomWidth: index === settingsData.length - 1 ? 0 : 1,
+                  borderBottomColor: '#f0f0f0',
+                }}
+                onPress={() =>
+                  item.title === 'Logout' ? setIsVisible(true) : item?.route && navigation.navigate(item.route)
+                }
+                >
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                  }}>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      gap: 10,
+                      alignItems: 'center',
+                      width:'80%',
+                    }}>
+                    <AntDesign name={item?.icon} size={24} color="#4c669f" />
+                    <View>
+                      <Text style={{fontSize: 16, fontWeight: '600'}}>
+                        {item.title}{}
+                      </Text>
+                      <Text style={{fontSize: 14, color: '#777'}}>
+                        {item.subTitle}
+                      </Text>
+                    </View>
+                  </View>
+                  <View>
+                    <AntDesign name="rightcircle" size={16} color="#9A66E8" />
+                  </View>
+                </View>
+              </TouchableOpacity>
+            )}
+          />
+        </View>
       </View>
-
-      {/* My Tasks Button */}
-      <TouchableOpacity
-        style={styles.taskButton}
-        onPress={() => navigation.navigate(RouterConstant.MYTASK)}
-      >
-        <Text style={styles.taskButtonText}>My Tasks</Text>
-      </TouchableOpacity>
-
-      {/* Logout Button */}
-      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-        <Text style={styles.logoutText}>Logout</Text>
-      </TouchableOpacity>
-    </SafeAreaView>
+      <ConfirmationModal isVisible={isVisible} handleCancel={()=>setIsVisible(false)} handleConfirm={handleLogout}/>
+    </View>
   );
 };
 
-export default Profile;
+export default ProfileScreen;
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#F5F5F5",
-    alignItems: "center",
-    paddingHorizontal: 20
-  },
-  profileContainer: {
-    alignItems: "center",
-    marginTop: 40
+  header: {
+    borderBottomLeftRadius: 20,
+    borderBottomRightRadius: 20,
   },
   profileImage: {
     width: 100,
     height: 100,
     borderRadius: 50,
-    marginBottom: 15
+    borderWidth: 3,
+    borderColor: '#4c669f',
   },
-  userName: {
+  name: {
     fontSize: 22,
-    fontWeight: "bold",
-    color: "#333"
+    fontWeight: 'bold',
+    marginTop: 10,
   },
-  userEmail: {
+  email: {
+    fontSize: 14,
+    color: '#777',
+  },
+  infoRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 5,
+  },
+  infoText: {
+    marginLeft: 5,
     fontSize: 16,
-    color: "#666",
-    marginTop: 5
+    color: '#4c669f',
   },
-  taskButton: {
-    backgroundColor: "#5F33E1",
+  buttonContainer: {
+    marginTop: 20,
+    alignItems: 'center',
+  },
+  syncButton: {
+    flexDirection: 'row',
+    backgroundColor: '#4c669f',
     paddingVertical: 12,
     paddingHorizontal: 20,
-    borderRadius: 10,
-    marginTop: 30,
-    width: "100%",
-    alignItems: "center"
+    borderRadius: 30,
+    alignItems: 'center',
+    width: '80%',
+    justifyContent: 'center',
+    marginBottom: 10,
   },
-  taskButtonText: {
-    color: "white",
+  syncButtonText: {
+    color: 'white',
     fontSize: 18,
-    fontWeight: "bold"
+    fontWeight: 'bold',
+    marginLeft: 10,
   },
   logoutButton: {
-    backgroundColor: "#FF3B30",
+    flexDirection: 'row',
+    backgroundColor: '#d9534f',
     paddingVertical: 12,
     paddingHorizontal: 20,
-    borderRadius: 10,
-    marginTop: 20,
-    width: "100%",
-    alignItems: "center"
+    borderRadius: 30,
+    alignItems: 'center',
+    width: '80%',
+    justifyContent: 'center',
   },
   logoutText: {
-    color: "white",
+    color: 'white',
     fontSize: 18,
-    fontWeight: "bold"
-  }
+    fontWeight: 'bold',
+    marginLeft: 10,
+  },
+  error: {
+    color: 'red',
+    marginTop: 10,
+    textAlign: 'center',
+  },
+  userImage: {
+    width: 50,
+    height: 50,
+    borderRadius: 50,
+    borderWidth: 3,
+    borderColor: '#4c669f',
+  },
 });

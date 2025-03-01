@@ -1,0 +1,78 @@
+{
+  "title": "Help & Support",
+  "description": "Find answers to common questions related to Akshify. If you need further help, contact our support team.",
+  "faqs": [
+    {
+      "question": "How do I create a new task?",
+      "answer": "To create a task, tap on the '+' icon on the home screen, enter task details, set priority, and press 'Save'."
+    },
+    {
+      "question": "How can I assign a task to someone else?",
+      "answer": "When creating or editing a task, select 'Assign to' and choose a user from your team. The assigned person will get a notification."
+    },
+    {
+      "question": "Can I set deadlines and reminders for tasks?",
+      "answer": "Yes, you can set due dates and enable notifications to receive reminders before the deadline."
+    },
+    {
+      "question": "How do I track task progress?",
+      "answer": "Each task has a status indicator. You can mark tasks as 'Pending', 'In Progress', or 'Completed'. The dashboard also shows task progress in real-time."
+    },
+    {
+      "question": "Is there a way to filter or sort tasks?",
+      "answer": "Yes, you can use filters to sort tasks by due date, priority, or status. Additionally, you can search for specific tasks using keywords."
+    },
+    {
+      "question": "Can I collaborate with my team on tasks?",
+      "answer": "Yes, Akshify allows you to invite team members, assign tasks, leave comments, and track work progress in a shared workspace."
+    },
+    {
+      "question": "What happens if I delete a task?",
+      "answer": "Deleted tasks move to the 'Trash' section and can be restored within 30 days. After that, they are permanently removed."
+    },
+    {
+      "question": "How do I change my account settings?",
+      "answer": "Go to 'Settings' from the profile menu to update your email, password, profile picture, and notification preferences."
+    },
+    {
+      "question": "Can I sync tasks across multiple devices?",
+      "answer": "Yes, Akshify automatically syncs tasks in real-time across all devices linked to your account."
+    },
+    {
+      "question": "How do I contact customer support?",
+      "answer": "You can reach us at support@akshify.com or use the in-app chat for immediate assistance."
+    },
+    {
+      "question": "What payment methods are accepted for premium features?",
+      "answer": "We accept credit/debit cards, PayPal, and UPI payments. Subscriptions can be managed in the 'Billing' section."
+    },
+    {
+      "question": "Is there a way to recover deleted tasks after 30 days?",
+      "answer": "No, permanently deleted tasks cannot be recovered. We recommend archiving important tasks instead of deleting them."
+    },
+    {
+      "question": "How do I enable dark mode?",
+      "answer": "Go to 'Settings' > 'Appearance' and toggle 'Dark Mode' to switch between light and dark themes."
+    },
+    {
+      "question": "Can I export my task list?",
+      "answer": "Yes, you can export your tasks as a CSV or PDF file from the 'Reports' section."
+    },
+    {
+      "question": "Does Akshify work offline?",
+      "answer": "Yes, you can create and edit tasks offline. Once you reconnect to the internet, changes will sync automatically."
+    },
+    {
+      "question": "How do I reset my password?",
+      "answer": "On the login screen, tap 'Forgot Password' and follow the instructions to reset your password via email."
+    },
+    {
+      "question": "How do I enable push notifications?",
+      "answer": "Go to 'Settings' > 'Notifications' and enable push notifications for task updates and reminders."
+    },
+    {
+      "question": "Is my data secure with Akshify?",
+      "answer": "Yes, we use end-to-end encryption to protect your data. Additionally, you can enable two-factor authentication for extra security."
+    }
+  ]
+}

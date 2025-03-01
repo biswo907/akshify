@@ -4,9 +4,9 @@
     "slug": "akshify",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/app-icon.png",
     "userInterfaceStyle": "light",
-    "newArchEnabled": true,
+    "newArchEnabled": false,
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
@@ -19,10 +19,17 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.rapido1.akshify"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "plugins": [["@react-native-google-signin/google-signin"]],
+    "extra": {
+      "eas": {
+        "projectId": "53a3a218-6a65-47e5-a68b-0059da88f597"
+      }
     }
   }
 }
