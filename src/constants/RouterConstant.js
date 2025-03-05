@@ -1,5 +1,6 @@
 export const RouterConstant = {
   SIGNUP: "signup",
+  SIGNIN: "signin",
   SPLASH: "splash",
   HOME: "home",
   CREATE: "create",
@@ -8,5 +9,6 @@ export const RouterConstant = {
   POLICY: "policy",
   NOTIFICATION: "notification",
   HELP: "help",
-  ABOUT: "about"
+  ABOUT: "about",
+  TABS: "tabs"
 };

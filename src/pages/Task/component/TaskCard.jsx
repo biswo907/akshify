@@ -10,7 +10,7 @@ const TaskCard = ({ item, index, handleDelete }) => {
 
       <View style={styles.taskContent}>
         {/* Task Title */}
-        <Text style={styles.taskTitle}>{item.taskSubject}</Text>
+        <Text style={styles.taskTitle}>{item.title}</Text>
 
         {/* Task Description */}
         <Text style={styles.taskDescription}>{item.description}</Text>

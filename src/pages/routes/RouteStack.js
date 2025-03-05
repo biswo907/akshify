@@ -13,48 +13,20 @@ import Policy from "../Policy";
 import Notification from "../Notification";
 import Help from "../Help";
 import About from "../About";
+import SigninScreen from "../auth/Login";
+import { useSelector } from "react-redux";
 
 const Stack = createNativeStackNavigator();
 
 export const RouteStack = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(null);
   const [showEmptyScreen, setShowEmptyScreen] = useState(true);
 
-  // React.useEffect(() => {
-  //   // Check for stored login status on app startup
-  //   const checkLoginStatus = async () => {
-  //     try {
-  //       const storedLogin = await AsyncStorage.getItem("isLoggedIn");
-  //       if (storedLogin !== null) {
-  //         setIsLoggedIn(JSON.parse(storedLogin)); // Parse stored boolean
-  //       } else {
-  //         setIsLoggedIn(false);
-  //       }
-  //     } catch (error) {
-  //       console.error("Error checking login status:", error);
-  //       setIsLoggedIn(false); // Default to false on error
-  //     }
-  //   };
-
-  //   checkLoginStatus();
-  // }, []);
+  const { isLogin } = useSelector(state => state.auth);
 
   useEffect(() => {
     // Show empty screen for 2 seconds
     setTimeout(() => {
       setShowEmptyScreen(false);
-
-      // Check login status after delay
-      const checkLoginStatus = async () => {
-        try {
-          const storedLogin = await AsyncStorage.getItem("isLoggedIn");
-          setIsLoggedIn(storedLogin ? JSON.parse(storedLogin) : false);
-        } catch (error) {
-          console.error("Error checking login status:", error);
-          setIsLoggedIn(false);
-        }
-      };
-      checkLoginStatus();
     }, 1000);
   }, []);
 
@@ -62,14 +34,14 @@ export const RouteStack = () => {
     return <SplashScreen />;
   }
 
-  if (isLoggedIn === null) {
+  if (isLogin === null) {
     return <SplashScreen />; // Optional loading screen while checking login
   }
 
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName={isLoggedIn ? "Home" : RouterConstant.SIGNUP}
+        initialRouteName={isLogin ? "Home" : RouterConstant.SIGNUP}
       >
         <Stack.Screen
           name={"Home"}
@@ -79,6 +51,11 @@ export const RouteStack = () => {
         <Stack.Screen
           name={RouterConstant.SIGNUP}
           component={SignupScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name={RouterConstant.SIGNIN}
+          component={SigninScreen}
           options={{ headerShown: false }}
         />
         <Stack.Screen

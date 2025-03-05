@@ -13,25 +13,19 @@ import AppHeader from "../../shared/Header";
 import ConfirmationModal from "../../shared/ConfirmationModal";
 import TaskCard from "./component/TaskCard";
 import EmptyComponent from "../../shared/EmptyComponent";
+import { useGetActiveTasksQuery } from "../../redux/services/taskService";
+import { useSelector } from "react-redux";
 
 const MyTasks = () => {
   const [tasks, setTasks] = useState([]);
-  const [selectedTask, setSelectedTask] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const { user } = useSelector((state) => state.auth);
 
-  useEffect(() => {
-    fetchTasks();
-  }, []);
+  const { data, error, isLoadinh } = useGetActiveTasksQuery({
+    userId: user?.userId
+  });
 
-  const fetchTasks = async () => {
-    try {
-      let storedTasks = await AsyncStorage.getItem("tasks");
-      storedTasks = storedTasks ? JSON.parse(storedTasks) : [];
-      setTasks(storedTasks);
-    } catch (error) {
-      console.error("Failed to load tasks:", error);
-    }
-  };
+  console.log("Dats", data);
 
   const confirmDeleteTask = (task, index) => {
     setSelectedTask({ task, index });
@@ -58,10 +52,10 @@ const MyTasks = () => {
       <View style={styles.container}>
         <FlatList
           showsVerticalScrollIndicator={false}
-          data={tasks}
-          keyExtractor={(item, index) => index.toString()}
+          data={data?.tasks}
+          keyExtractor={(item) => item?._id}
           contentContainerStyle={
-            tasks.length === 0 ? styles.emptyListContainer : {}
+            data?.tasks.length === 0 ? styles.emptyListContainer : {}
           }
           renderItem={({ item, index }) => (
             <TaskCard
@@ -82,7 +76,7 @@ const MyTasks = () => {
           isVisible={isModalVisible}
           handleCancel={() => setIsModalVisible(false)}
           title="Confirm Delete"
-          description={`Are you sure you want to delete this task: ${selectedTask?.task.taskSubject} ?`}
+          description={`Are you sure you want to delete this task: ?`}
           handleConfirm={deleteTask}
         />
       </View>

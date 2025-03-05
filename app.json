@@ -25,10 +25,14 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "plugins": [["@react-native-google-signin/google-signin"]],
+    "plugins": [
+      [
+        "@react-native-google-signin/google-signin"
+      ]
+    ],
     "extra": {
       "eas": {
-        "projectId": "53a3a218-6a65-47e5-a68b-0059da88f597"
+        "projectId": "1d30d482-a8a7-46c2-baa9-d6e3a5d517fc"
       }
     }
   }

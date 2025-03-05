@@ -2,164 +2,213 @@ import {
   StyleSheet,
   Text,
   View,
-  TextInput,
-  Keyboard,
   KeyboardAvoidingView,
-  TouchableWithoutFeedback,
-  ImageBackground,
-  TouchableOpacity
+  ScrollView,
+  Platform,
+  Alert,
+  Pressable
 } from "react-native";
 import React, { useState } from "react";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import Safewrapper from "../../shared/Safewrapper";
+import CustomTextInput from "../../shared/CustomTextInput";
+import CustomButton from "../../shared/CustomButton";
+import { useRegisterMutation } from "../../redux/services/authService";
+import { useDispatch } from "react-redux";
+import { setIsLogin, setToken, setUser } from "../../redux/reducers/authSlice";
 import { useNavigation } from "@react-navigation/native";
 import { RouterConstant } from "../../constants/RouterConstant";
-import CustomButton from "../../components/CustomButton";
 import { showToast } from "../../utils/Toast";
-import Icon from "react-native-vector-icons/Feather"; // Import icon
-import { StatusBar } from "expo-status-bar";
-import { GoogleSignin } from "@react-native-google-signin/google-signin";
-
-GoogleSignin.configure({
-  webClientId: `716771364474-1q7n55h7phgrej82ionuiehi2mnt4j5i.apps.googleusercontent.com`,
-  scopes: ["https://www.googleapis.com/auth/drive.readonly"],
-  offlineAccess: true,
-  forceCodeForRefreshToken: true
-});
 
 const SignupScreen = () => {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [isPasswordVisible, setIsPasswordVisible] = useState(false); // State for toggling password visibility
-  const navigation = useNavigation();
+  const dispatch = useDispatch();
+  navigation = useNavigation();
+
+  const [form, setForm] = useState({
+    full_name: "",
+    username: "",
+    phone: "",
+    email: "",
+    password: "",
+    confirm_password: ""
+  });
+
+  const [register, { isLoading }] = useRegisterMutation();
+
+  const handleChange = (name, value) => {
+    setForm({ ...form, [name]: value });
+  };
+
+  const handleLogin = () => {
+    navigation.navigate(RouterConstant.SIGNIN);
+  };
 
   const handleSignup = async () => {
-    console.log("Calll");
-
-    if (!username || !password) {
-      showToast("Username and password are required.");
+    if (
+      !form.full_name ||
+      !form.username ||
+      !form.phone ||
+      !form.email ||
+      !form.password ||
+      !form.confirm_password
+    ) {
+      showToast("All fields are required!");
       return;
     }
-    if (username === "biswo@gmail.com" && password === "Biswo@123") {
-      await AsyncStorage.setItem("isLoggedIn", JSON.stringify(true));
-      navigation.replace("Home");
-    } else {
-      showToast("Access denied. Wrong credentials.");
+
+    if (form.password !== form.confirm_password) {
+      showToast("Passwords do not match!");
+      return;
+    }
+
+    try {
+      const response = await register({
+        full_name: form.full_name,
+        username: form.username,
+        phone: form.phone,
+        email: form.email,
+        password: form.password,
+        confirm_password: form.confirm_password
+      }).unwrap();
+
+      dispatch(setIsLogin(true));
+      dispatch(setUser(response?.user));
+      dispatch(setToken(response?.token));
+      navigation.reset({
+        index: 0,
+        routes: [{ name: RouterConstant.TABS }]
+      });
+      showToast("Success", "Account created successfully!");
+    } catch (error) {
+      console.error("Signup Error:", error);
+      Alert.alert(
+        "Signup Failed",
+        error?.data?.message || "Something went wrong!"
+      );
     }
   };
 
-  const image = {
-    uri: `https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRGTAKuHtTIBATCYZ_VkurIx1bN9rE3Sr9xGw&s`
-  };
+  const bgcolor = `rgba(255, 255, 255, 0.2)`;
 
   return (
-    <ImageBackground source={image} style={styles.backgroundImage}>
-      <StatusBar translucent />
-      <KeyboardAvoidingView style={styles.container} behavior="padding">
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-          <View style={styles.innerContainer}>
-            <Text style={styles.title}>Login</Text>
+    <Safewrapper>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 0}
+        style={styles.keyboardAvoidingView}
+      >
+        <ScrollView
+          contentContainerStyle={styles.scrollView}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View style={styles.container}>
+            <Text style={styles.title}>Sign Up</Text>
 
-            {/* Username Input */}
-            <TextInput
-              style={styles.input}
+            <CustomTextInput
+              placeholder="Full Name"
+              value={form.full_name}
+              onChangeText={(text) => handleChange("full_name", text)}
+              backgroundColor={bgcolor}
+            />
+            <CustomTextInput
               placeholder="Username"
-              value={username}
-              onChangeText={setUsername}
+              value={form.username}
+              onChangeText={(text) => handleChange("username", text)}
+              backgroundColor={bgcolor}
+            />
+            <CustomTextInput
+              placeholder="Phone"
+              keyboardType="phone-pad"
+              value={form.phone}
+              onChangeText={(text) => handleChange("phone", text)}
+              backgroundColor={bgcolor}
+              maxLength={10}
+            />
+            <CustomTextInput
+              placeholder="Email"
+              keyboardType="email-address"
+              value={form.email}
+              onChangeText={(text) => handleChange("email", text)}
+              backgroundColor={bgcolor}
+            />
+            <CustomTextInput
+              placeholder="Password"
+              secureTextEntry
+              value={form.password}
+              onChangeText={(text) => handleChange("password", text)}
+              backgroundColor={bgcolor}
+            />
+            <CustomTextInput
+              placeholder="Confirm Password"
+              secureTextEntry
+              value={form.confirm_password}
+              onChangeText={(text) => handleChange("confirm_password", text)}
+              backgroundColor={bgcolor}
             />
 
-            {/* Password Input with Toggle */}
-            <View style={styles.passwordContainer}>
-              <TextInput
-                style={styles.passwordInput}
-                placeholder="Password"
-                value={password}
-                onChangeText={setPassword}
-                secureTextEntry={!isPasswordVisible}
+            <View style={styles.buttonContainer}>
+              <CustomButton
+                colors={["#FFD700", "#FFA500"]}
+                title={"Signup"}
+                onPress={handleSignup}
+                isLoading={isLoading} // Shows loader while signing up
               />
-              <TouchableOpacity
-                onPress={() => setIsPasswordVisible(!isPasswordVisible)}
-                style={styles.eyeIcon}
-              >
-                <Icon
-                  name={isPasswordVisible ? "eye" : "eye-off"}
-                  size={14}
-                  color="#666"
-                />
-              </TouchableOpacity>
+
+              <View style={styles.loginWrapper}>
+                <Text style={styles.loginText}>Already have an account !</Text>
+                <Pressable onPress={handleLogin}>
+                  <Text
+                    style={[
+                      styles.loginText,
+                      { color: "white", fontWeight: "bold" }
+                    ]}
+                  >
+                    Login
+                  </Text>
+                </Pressable>
+              </View>
             </View>
-
-            <CustomButton title={"Login"} onPress={handleSignup} />
-
-            {/* <GoogleSigninButton
-              style={styles.googleButton}
-              size={GoogleSigninButton.Size.Wide}
-              color={GoogleSigninButton.Color.Dark}
-              onPress={signIn}
-            /> */}
           </View>
-        </TouchableWithoutFeedback>
+        </ScrollView>
       </KeyboardAvoidingView>
-    </ImageBackground>
+    </Safewrapper>
   );
 };
 
 export default SignupScreen;
 
 const styles = StyleSheet.create({
-  backgroundImage: {
-    flex: 1,
-    resizeMode: "cover",
-    justifyContent: "center"
+  keyboardAvoidingView: {
+    flex: 1
+  },
+  scrollView: {
+    flexGrow: 1
   },
   container: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center"
-  },
-  innerContainer: {
-    width: "90%",
-    backgroundColor: "white",
-    borderRadius: 10,
     padding: 20,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.8,
-    shadowRadius: 2,
-    elevation: 5
+    justifyContent: "center"
   },
   title: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: "bold",
-    marginBottom: 20,
-    textAlign: "center"
+    color: "#fff",
+    textAlign: "center",
+    marginBottom: 20
   },
-  input: {
-    height: 40,
-    borderColor: "#ccc",
-    borderWidth: 1,
-    borderRadius: 5,
-    marginBottom: 15,
-    paddingHorizontal: 10
+  buttonContainer: {
+    marginTop: 10,
+    marginBottom: 40
   },
-  passwordContainer: {
+  loginWrapper: {
+    display: "flex",
     flexDirection: "row",
+    gap: 10,
     alignItems: "center",
-    borderColor: "#ccc",
-    borderWidth: 1,
-    borderRadius: 5,
-    marginBottom: 15,
-    paddingHorizontal: 10
+    justifyContent: "center",
+    marginVertical: 10
   },
-  passwordInput: {
-    flex: 1,
-    height: 40
-  },
-  eyeIcon: {
-    padding: 8
-  },
-  googleButton: {
-    width: "100%",
-    height: 48,
-    marginTop: 20
+  loginText: {
+    color: "#f7f7f7",
+    fontSize: 18
   }
 });

@@ -14,19 +14,22 @@ import {
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import CustomButton from "../../components/CustomButton";
 import { screenWidth } from "../../utils/dimensions";
 import { useIsFocused, useNavigation } from "@react-navigation/native";
 import { RouterConstant } from "../../constants/RouterConstant";
 import { showToast } from "../../utils/Toast";
 import moment from "moment";
 import { MaterialIcons } from "@expo/vector-icons";
+import { useCreateTaskMutation } from "../../redux/services/taskService";
+import CustomButton from "../../shared/CustomButton";
 
 const CreateTask = () => {
   const [taskSubject, setTaskSubject] = useState("");
   const [description, setDescription] = useState("");
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
+
+  const [createTask, { isLoading }] = useCreateTaskMutation();
 
   const [showStartDatePicker, setShowStartDatePicker] = useState(false);
   const [showEndDatePicker, setShowEndDatePicker] = useState(false);
@@ -36,31 +39,29 @@ const CreateTask = () => {
   const today = moment().startOf("day"); // Get today's date with time set to 00:00:00
 
   const handleSaveTask = async () => {
-    console.log("handle Task Called");
-
     if (!taskSubject || !description || !startDate || !endDate) {
-      Alert.alert("Error", "All fields are required!");
+      showToast("All fields are required!");
       return;
     }
-
-    const newTask = {
-      taskSubject,
-      description,
-      startDate,
-      endDate
-    };
-
     try {
-      let tasks = await AsyncStorage.getItem("tasks");
-      tasks = tasks ? JSON.parse(tasks) : [];
-      tasks.push(newTask);
+      const response = await createTask({
+        title: taskSubject,
+        description: description,
+        task_color: "#4A90E2",
+        task_font_family: "Arial",
+        description_color: "#333333",
+        description_font_family: "Verdana",
+        from_date: startDate,
+        to_date: endDate,
+        priority: "high",
+        is_favorite: true
+      }).unwrap();
 
-      await AsyncStorage.setItem("tasks", JSON.stringify(tasks));
-      showToast("Task saved successfully!");
+      showToast(response?.message || "Task saved successfully!");
       navigation.navigate(RouterConstant.MYTASK);
       clearFields();
     } catch (error) {
-      console.error("Error saving task:", error);
+      console.log("Error", error);
     }
   };
 
@@ -202,6 +203,7 @@ const CreateTask = () => {
             onPress={handleSaveTask}
             title="Create Task"
             colors={["#FF4081", "#FF9800"]}
+            isLoading={isLoading}
           />
           <View style={styles.buttonWrapper} />
         </ScrollView>
