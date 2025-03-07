@@ -29,6 +29,8 @@ const CreateTask = () => {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
 
+  const STAUS = ["Pending", "In-Progress", "Completed"];
+
   const [createTask, { isLoading }] = useCreateTaskMutation();
 
   const [showStartDatePicker, setShowStartDatePicker] = useState(false);
@@ -58,7 +60,9 @@ const CreateTask = () => {
       }).unwrap();
 
       showToast(response?.message || "Task saved successfully!");
-      navigation.navigate(RouterConstant.MYTASK);
+      navigation.navigate(RouterConstant.MYTASK, {
+        isFrom: RouterConstant.MYTASK
+      });
       clearFields();
     } catch (error) {
       console.log("Error", error);
@@ -197,6 +201,46 @@ const CreateTask = () => {
               }}
             />
           )}
+
+          <Text
+            style={{
+              color: "white",
+              fontSize: 15,
+              fontWeight: "500",
+              marginBottom: 10
+            }}
+          >
+            Task Status
+          </Text>
+
+          <View
+            style={{ display: "flex", flexDirection: "row", marginBottom: 30 }}
+          >
+            {STAUS?.map((item, i) => (
+              <View
+                style={{
+                  paddingHorizontal: 12,
+                  paddingVertical: 5,
+                  marginHorizontal: 6,
+                  borderRadius: 100,
+                  borderWidth: 1,
+                  borderColor: item === "Pending" ? "white" : "gray",
+                  backgroundColor: "#FFFFFF1A"
+                }}
+                key={i}
+              >
+                <Text
+                  style={{
+                    color: item === "Pending" ? "white" : "gray",
+                    fontSize: 15,
+                    fontWeight: "500"
+                  }}
+                >
+                  {item}
+                </Text>
+              </View>
+            ))}
+          </View>
 
           {/* Save Button */}
           <CustomButton

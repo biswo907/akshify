@@ -34,7 +34,7 @@ const ProfileScreen = () => {
 
   const handleLogout = async () => {
     dispatch(logOutUser())
-    navigation.replace(RouterConstant.SIGNIN);
+    navigation.replace(RouterConstant.SIGNUP);
   };
 
   const settingsData = [
@@ -49,14 +49,16 @@ const ProfileScreen = () => {
       id: 2,
       title: "Settings",
       subTitle: "Manage your app settings",
-      icon: "setting"
+      icon: "setting",
+      route: RouterConstant.SETTINGS
     },
-    { id: 3, title: "Theme", subTitle: "Change your app theme", icon: "skin" },
+    { id: 3, title: "Theme", subTitle: "Change your app theme", icon: "skin",route: RouterConstant.THEME },
     {
       id: 4,
       title: "Language",
       subTitle: "Change app language",
-      icon: "earth"
+      icon: "earth",
+      route: RouterConstant.LANGUAGE
     },
     {
       id: 5,

@@ -1,12 +1,14 @@
 import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import React from "react";
+import { ActivityIndicator } from "react-native";
 
 const ConfirmationModal = ({
   isVisible,
   handleCancel,
   handleConfirm,
   title = "Are you sure?",
-  description = "Are you sure you want to proceed with this action?"
+  description = "Are you sure you want to proceed with this action?",
+  isLoading
 }) => {
   return (
     <Modal
@@ -36,10 +38,13 @@ const ConfirmationModal = ({
               <Text style={styles.cancelText}>Cancel</Text>
             </TouchableOpacity>
             <TouchableOpacity
+              disabled={isLoading}
               onPress={handleConfirm}
               style={styles.confirmButton}
             >
-              <Text style={styles.confirmText}>Confirm</Text>
+              {isLoading
+                ? <ActivityIndicator />
+                : <Text style={styles.confirmText}>Confirm</Text>}
             </TouchableOpacity>
           </View>
         </View>

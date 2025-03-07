@@ -10,5 +10,8 @@ export const RouterConstant = {
   NOTIFICATION: "notification",
   HELP: "help",
   ABOUT: "about",
-  TABS: "tabs"
+  TABS: "tabs",
+  THEME: "theme",
+  LANGUAGE: "language",
+  SETTINGS: "settings"
 };

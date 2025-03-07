@@ -61,21 +61,7 @@ const NotificationScreen = () => {
       <FlatList
         data={notifications}
         keyExtractor={item => item.id}
-        renderItem={({ item }) =>
-          <View style={styles.notificationCard}>
-            <View style={styles.notificationContent}>
-              <Text style={styles.title}>
-                {item.title}
-              </Text>
-              <Text style={styles.description}>
-                {item.description}
-              </Text>
-              <Text style={styles.time}>
-                {item.time}
-              </Text>
-            </View>
-            <AntDesign name="rightcircle" size={16} color="#9A66E8" />
-          </View>}
+        renderItem={({ item }) => <NotificationCard item={item} />}
         showsVerticalScrollIndicator={false}
       />
     </Safewrapper>
@@ -83,6 +69,22 @@ const NotificationScreen = () => {
 };
 
 export default NotificationScreen;
+
+const NotificationCard = ({ item }) =>
+  <View style={styles.notificationCard}>
+    <View style={styles.notificationContent}>
+      <Text style={styles.title}>
+        {item.title}
+      </Text>
+      <Text style={styles.description}>
+        {item.description}
+      </Text>
+      <Text style={styles.time}>
+        {item.time}
+      </Text>
+    </View>
+    <AntDesign name="rightcircle" size={16} color="#9A66E8" />
+  </View>;
 
 const styles = StyleSheet.create({
   notificationCard: {

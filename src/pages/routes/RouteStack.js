@@ -15,6 +15,9 @@ import Help from "../Help";
 import About from "../About";
 import SigninScreen from "../auth/Login";
 import { useSelector } from "react-redux";
+import ThemeSettingsScreen from "../Theme";
+import LanguageScreen from "../Language";
+import SettingsScreen from "../Setting";
 
 const Stack = createNativeStackNavigator();
 
@@ -41,13 +44,14 @@ export const RouteStack = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName={isLogin ? "Home" : RouterConstant.SIGNUP}
+        initialRouteName={isLogin ? RouterConstant.TABS : RouterConstant.SIGNUP}
       >
         <Stack.Screen
-          name={"Home"}
+          name={RouterConstant.TABS}
           component={BottomTabBar}
           options={{ headerShown: false }}
         />
+
         <Stack.Screen
           name={RouterConstant.SIGNUP}
           component={SignupScreen}
@@ -86,6 +90,21 @@ export const RouteStack = () => {
         <Stack.Screen
           name={RouterConstant.ABOUT}
           component={About}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name={RouterConstant.THEME}
+          component={ThemeSettingsScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name={RouterConstant.LANGUAGE}
+          component={LanguageScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name={RouterConstant.SETTINGS}
+          component={SettingsScreen}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>

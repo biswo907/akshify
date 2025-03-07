@@ -13,36 +13,55 @@ import AppHeader from "../../shared/Header";
 import ConfirmationModal from "../../shared/ConfirmationModal";
 import TaskCard from "./component/TaskCard";
 import EmptyComponent from "../../shared/EmptyComponent";
-import { useGetActiveTasksQuery } from "../../redux/services/taskService";
+import {
+  useDeleteTaskMutation,
+  useGetActiveTasksQuery
+} from "../../redux/services/taskService";
 import { useSelector } from "react-redux";
+import { showToast } from "../../utils/Toast";
+import { RouterConstant } from "../../constants/RouterConstant";
 
-const MyTasks = () => {
-  const [tasks, setTasks] = useState([]);
+const MyTasks = ({ route }) => {
+  const isFrom = route?.params?.isFrom || "";
+  console.log("----", isFrom);
+
+  const [selectedTask, setSelectedTask] = useState("");
   const [isModalVisible, setIsModalVisible] = useState(false);
   const { user } = useSelector((state) => state.auth);
 
-  const { data, error, isLoadinh } = useGetActiveTasksQuery({
+  const { data, error, isLoading, refetch } = useGetActiveTasksQuery({
     userId: user?.userId
   });
+  const [deleteTask, { isLoading: deleteTaskLoading }] =
+    useDeleteTaskMutation();
 
-  console.log("Dats", data);
+  useEffect(() => {
+    if (isFrom === RouterConstant.MYTASK) {
+      console.log("Comes from My Task");
 
-  const confirmDeleteTask = (task, index) => {
-    setSelectedTask({ task, index });
+      refetch();
+    }
+  }, [isFrom]);
+
+  const confirmDeleteTask = (task) => {
+    setSelectedTask(task);
     setIsModalVisible(true);
   };
+  const handleCloseModal = () => {
+    setSelectedTask("");
+    setIsModalVisible(false);
+  };
 
-  const deleteTask = async () => {
+  const handleDeleteTask = async () => {
     try {
-      if (!selectedTask) return;
-      let updatedTasks = [...tasks];
-      updatedTasks.splice(selectedTask.index, 1);
-
-      await AsyncStorage.setItem("tasks", JSON.stringify(updatedTasks));
-      setTasks(updatedTasks);
+      const response = await deleteTask({
+        taskId: selectedTask?._id
+      }).unwrap();
+      refetch();
       setIsModalVisible(false);
+      showToast(response?.message);
     } catch (error) {
-      console.error("Error deleting task:", error);
+      showToast(error?.data?.message);
     }
   };
 
@@ -58,11 +77,7 @@ const MyTasks = () => {
             data?.tasks.length === 0 ? styles.emptyListContainer : {}
           }
           renderItem={({ item, index }) => (
-            <TaskCard
-              item={item}
-              index={index}
-              handleDelete={confirmDeleteTask}
-            />
+            <TaskCard item={item} handleDelete={confirmDeleteTask} />
           )}
           ListEmptyComponent={
             <EmptyComponent
@@ -74,10 +89,11 @@ const MyTasks = () => {
 
         <ConfirmationModal
           isVisible={isModalVisible}
-          handleCancel={() => setIsModalVisible(false)}
+          handleCancel={handleCloseModal}
           title="Confirm Delete"
           description={`Are you sure you want to delete this task: ?`}
-          handleConfirm={deleteTask}
+          handleConfirm={handleDeleteTask}
+          isLoading={deleteTaskLoading}
         />
       </View>
     </Safewrapper>
