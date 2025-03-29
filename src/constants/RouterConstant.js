@@ -13,5 +13,7 @@ export const RouterConstant = {
   TABS: "tabs",
   THEME: "theme",
   LANGUAGE: "language",
-  SETTINGS: "settings"
+  SETTINGS: "settings",
+  TASKDETAILS: "taskdetails",
+  EDITTASK: "edittask"
 };

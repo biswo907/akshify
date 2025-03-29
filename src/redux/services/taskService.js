@@ -40,8 +40,8 @@ export const taskApi = createApi({
       }),
     }),
     getActiveTasks: builder.query({
-      query: () => 'task/active',
-    }),
+      query: (userId) => `task/active?userId=${userId}`,
+    }),    
     getTaskHistory: builder.query({
       query: () => 'task/history',
     }),

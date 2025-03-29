@@ -3,9 +3,13 @@ import React from "react";
 import moment from "moment";
 import { MaterialIcons } from "@expo/vector-icons";
 
-const TaskCard = ({ item, handleDelete }) => {
+const TaskCard = ({ item, handleDelete, onPress }) => {
   return (
-    <View style={styles.taskCard}>
+    <TouchableOpacity
+      onPress={onPress}
+      activeOpacity={0.8}
+      style={styles.taskCard}
+    >
       {/* Left color-coded status bar */}
 
       <View style={styles.taskContent}>
@@ -42,7 +46,7 @@ const TaskCard = ({ item, handleDelete }) => {
       >
         <MaterialIcons name="delete" size={24} color="red" />
       </TouchableOpacity>
-    </View>
+    </TouchableOpacity>
   );
 };
 

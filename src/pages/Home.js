@@ -10,8 +10,8 @@ const Home = () => {
   return (
     <Safewrapper>
       <View style={styles.container}>
-        <Text style={styles.title}>Welcome to MyApp</Text>
-        <Text style={styles.subtitle}>Explore and experience the best!</Text>
+        {/* <Text style={styles.title}>Welcome to MyApp</Text> */}
+        {/* <Text style={styles.subtitle}>Explore and experience the best!</Text> */}
       </View>
     </Safewrapper>
   );

@@ -20,6 +20,7 @@ import {
 import { useSelector } from "react-redux";
 import { showToast } from "../../utils/Toast";
 import { RouterConstant } from "../../constants/RouterConstant";
+import { useNavigation } from "@react-navigation/native";
 
 const MyTasks = ({ route }) => {
   const isFrom = route?.params?.isFrom || "";
@@ -28,6 +29,7 @@ const MyTasks = ({ route }) => {
   const [selectedTask, setSelectedTask] = useState("");
   const [isModalVisible, setIsModalVisible] = useState(false);
   const { user } = useSelector((state) => state.auth);
+  const navigation = useNavigation();
 
   const { data, error, isLoading, refetch } = useGetActiveTasksQuery({
     userId: user?.userId
@@ -64,6 +66,9 @@ const MyTasks = ({ route }) => {
       showToast(error?.data?.message);
     }
   };
+  const handlePress = () => {
+    navigation.navigate(RouterConstant.TASKDETAILS);
+  };
 
   return (
     <Safewrapper>
@@ -77,7 +82,11 @@ const MyTasks = ({ route }) => {
             data?.tasks.length === 0 ? styles.emptyListContainer : {}
           }
           renderItem={({ item, index }) => (
-            <TaskCard item={item} handleDelete={confirmDeleteTask} />
+            <TaskCard
+              item={item}
+              handleDelete={confirmDeleteTask}
+              onPress={handlePress}
+            />
           )}
           ListEmptyComponent={
             <EmptyComponent

@@ -18,13 +18,23 @@ import { useSelector } from "react-redux";
 import ThemeSettingsScreen from "../Theme";
 import LanguageScreen from "../Language";
 import SettingsScreen from "../Setting";
+import { useGetActiveTasksQuery } from "../../redux/services/taskService";
+import TaskDetailsScreen from "../Task/TaskDetails";
+import EditTaskScreen from "../Task/EditTask";
 
 const Stack = createNativeStackNavigator();
 
 export const RouteStack = () => {
   const [showEmptyScreen, setShowEmptyScreen] = useState(true);
 
-  const { isLogin } = useSelector(state => state.auth);
+  const { isLogin, user } = useSelector((state) => state.auth);
+
+  const { data, error, isLoading } = useGetActiveTasksQuery({
+    userId: user?.userId
+  });
+
+  console.log("DATA", data);
+  console.log("ERROR", error?.data?.status);
 
   useEffect(() => {
     // Show empty screen for 2 seconds
@@ -33,7 +43,7 @@ export const RouteStack = () => {
     }, 1000);
   }, []);
 
-  if (showEmptyScreen) {
+  if (showEmptyScreen || isLoading) {
     return <SplashScreen />;
   }
 
@@ -44,7 +54,11 @@ export const RouteStack = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName={isLogin ? RouterConstant.TABS : RouterConstant.SIGNUP}
+        initialRouteName={
+          isLogin && !(error?.status === 401)
+            ? RouterConstant.TABS
+            : RouterConstant.SIGNUP
+        }
       >
         <Stack.Screen
           name={RouterConstant.TABS}
@@ -105,6 +119,16 @@ export const RouteStack = () => {
         <Stack.Screen
           name={RouterConstant.SETTINGS}
           component={SettingsScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name={RouterConstant.TASKDETAILS}
+          component={TaskDetailsScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name={RouterConstant.EDITTASK}
+          component={EditTaskScreen}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>

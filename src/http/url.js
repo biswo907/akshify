@@ -1,2 +1,1 @@
-// export const BASE_URL = `akshify-backend.vercel.app/api`;
-export const BASE_URL = "http://192.168.231.194:5000/api";
+export const BASE_URL = `https://akshify-backend.vercel.app/api`;
