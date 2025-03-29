@@ -28,7 +28,7 @@ const BottomTabBar = () => {
           // Return the icon component
           return <Ionicons name={iconName} size={size} color={color} />;
         },
-        tabBarActiveTintColor: "tomato", // Active icon color
+        tabBarActiveTintColor: "#9A66E8", // Active icon color
         tabBarInactiveTintColor: "gray", // Inactive icon color
         tabBarStyle: {
           position: "absolute", // Optional: to position the tab bar absolutely

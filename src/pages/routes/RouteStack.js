@@ -1,59 +1,136 @@
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import AsyncStorage from "@react-native-async-storage/async-storage"; // For persistent login
-import React from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import React, { useEffect, useState } from "react";
+import { View } from "react-native"; // Empty View for 2-sec delay
 import SplashScreen from "../splash";
 import { RouterConstant } from "../../constants/RouterConstant";
 import SignupScreen from "../auth/Signup";
 import Home from "../Home";
 import BottomTabBar from "./BottomTabBar";
 import MyTasks from "../Task/MyTasks";
+import Policy from "../Policy";
+import Notification from "../Notification";
+import Help from "../Help";
+import About from "../About";
+import SigninScreen from "../auth/Login";
+import { useSelector } from "react-redux";
+import ThemeSettingsScreen from "../Theme";
+import LanguageScreen from "../Language";
+import SettingsScreen from "../Setting";
+import { useGetActiveTasksQuery } from "../../redux/services/taskService";
+import TaskDetailsScreen from "../Task/TaskDetails";
+import EditTaskScreen from "../Task/EditTask";
 
 const Stack = createNativeStackNavigator();
 
 export const RouteStack = () => {
-  const [isLoggedIn, setIsLoggedIn] = React.useState(null); // Initialize as null
+  const [showEmptyScreen, setShowEmptyScreen] = useState(true);
 
-  React.useEffect(() => {
-    // Check for stored login status on app startup
-    const checkLoginStatus = async () => {
-      try {
-        const storedLogin = await AsyncStorage.getItem("isLoggedIn");
-        if (storedLogin !== null) {
-          setIsLoggedIn(JSON.parse(storedLogin)); // Parse stored boolean
-        } else {
-          setIsLoggedIn(false);
-        }
-      } catch (error) {
-        console.error("Error checking login status:", error);
-        setIsLoggedIn(false); // Default to false on error
-      }
-    };
+  const { isLogin, user } = useSelector((state) => state.auth);
 
-    checkLoginStatus();
+  const { data, error, isLoading } = useGetActiveTasksQuery({
+    userId: user?.userId
+  });
+
+  console.log("DATA", data);
+  console.log("ERROR", error?.data?.status);
+
+  useEffect(() => {
+    // Show empty screen for 2 seconds
+    setTimeout(() => {
+      setShowEmptyScreen(false);
+    }, 1000);
   }, []);
 
-  if (isLoggedIn === null) {
-    return <SplashScreen />; // Or a loading component
+  if (showEmptyScreen || isLoading) {
+    return <SplashScreen />;
+  }
+
+  if (isLogin === null) {
+    return <SplashScreen />; // Optional loading screen while checking login
   }
 
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName={isLoggedIn ? "Home" : RouterConstant.SIGNUP}
+        initialRouteName={
+          isLogin && !(error?.status === 401)
+            ? RouterConstant.TABS
+            : RouterConstant.SIGNUP
+        }
       >
         <Stack.Screen
-          name={"Home"}
+          name={RouterConstant.TABS}
           component={BottomTabBar}
           options={{ headerShown: false }}
         />
+
         <Stack.Screen
           name={RouterConstant.SIGNUP}
           component={SignupScreen}
           options={{ headerShown: false }}
         />
-        <Stack.Screen name={RouterConstant.SPLASH} component={SplashScreen} />
-        <Stack.Screen name={RouterConstant.MYTASK} component={MyTasks} />
+        <Stack.Screen
+          name={RouterConstant.SIGNIN}
+          component={SigninScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name={RouterConstant.SPLASH}
+          component={SplashScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name={RouterConstant.MYTASK}
+          component={MyTasks}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name={RouterConstant.POLICY}
+          component={Policy}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name={RouterConstant.NOTIFICATION}
+          component={Notification}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name={RouterConstant.HELP}
+          component={Help}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name={RouterConstant.ABOUT}
+          component={About}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name={RouterConstant.THEME}
+          component={ThemeSettingsScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name={RouterConstant.LANGUAGE}
+          component={LanguageScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name={RouterConstant.SETTINGS}
+          component={SettingsScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name={RouterConstant.TASKDETAILS}
+          component={TaskDetailsScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name={RouterConstant.EDITTASK}
+          component={EditTaskScreen}
+          options={{ headerShown: false }}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );

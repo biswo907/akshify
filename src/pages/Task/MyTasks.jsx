@@ -8,104 +8,104 @@ import {
   Modal
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { MaterialIcons } from "@expo/vector-icons";
+import Safewrapper from "../../shared/Safewrapper";
+import AppHeader from "../../shared/Header";
+import ConfirmationModal from "../../shared/ConfirmationModal";
+import TaskCard from "./component/TaskCard";
+import EmptyComponent from "../../shared/EmptyComponent";
+import {
+  useDeleteTaskMutation,
+  useGetActiveTasksQuery
+} from "../../redux/services/taskService";
+import { useSelector } from "react-redux";
+import { showToast } from "../../utils/Toast";
+import { RouterConstant } from "../../constants/RouterConstant";
+import { useNavigation } from "@react-navigation/native";
 
-const MyTasks = () => {
-  const [tasks, setTasks] = useState([]);
-  const [selectedTask, setSelectedTask] = useState(null);
+const MyTasks = ({ route }) => {
+  const isFrom = route?.params?.isFrom || "";
+  console.log("----", isFrom);
+
+  const [selectedTask, setSelectedTask] = useState("");
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const { user } = useSelector((state) => state.auth);
+  const navigation = useNavigation();
+
+  const { data, error, isLoading, refetch } = useGetActiveTasksQuery({
+    userId: user?.userId
+  });
+  const [deleteTask, { isLoading: deleteTaskLoading }] =
+    useDeleteTaskMutation();
 
   useEffect(() => {
-    fetchTasks();
-  }, []);
+    if (isFrom === RouterConstant.MYTASK) {
+      console.log("Comes from My Task");
 
-  const fetchTasks = async () => {
-    try {
-      let storedTasks = await AsyncStorage.getItem("tasks");
-      storedTasks = storedTasks ? JSON.parse(storedTasks) : [];
-      setTasks(storedTasks);
-    } catch (error) {
-      console.error("Failed to load tasks:", error);
+      refetch();
     }
-  };
+  }, [isFrom]);
 
-  const confirmDeleteTask = (task, index) => {
-    setSelectedTask({ task, index });
+  const confirmDeleteTask = (task) => {
+    setSelectedTask(task);
     setIsModalVisible(true);
   };
+  const handleCloseModal = () => {
+    setSelectedTask("");
+    setIsModalVisible(false);
+  };
 
-  const deleteTask = async () => {
+  const handleDeleteTask = async () => {
     try {
-      if (!selectedTask) return;
-      let updatedTasks = [...tasks];
-      updatedTasks.splice(selectedTask.index, 1);
-
-      await AsyncStorage.setItem("tasks", JSON.stringify(updatedTasks));
-      setTasks(updatedTasks);
+      const response = await deleteTask({
+        taskId: selectedTask?._id
+      }).unwrap();
+      refetch();
       setIsModalVisible(false);
+      showToast(response?.message);
     } catch (error) {
-      console.error("Error deleting task:", error);
+      showToast(error?.data?.message);
     }
+  };
+  const handlePress = () => {
+    navigation.navigate(RouterConstant.TASKDETAILS);
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.header}>My Tasks</Text>
-
-      {tasks.length === 0 ? (
-        <Text style={styles.noTasks}>No tasks available.</Text>
-      ) : (
+    <Safewrapper>
+      <AppHeader title={"My Tasks"} />
+      <View style={styles.container}>
         <FlatList
-          data={tasks}
-          keyExtractor={(item, index) => index.toString()}
+          showsVerticalScrollIndicator={false}
+          data={data?.tasks}
+          keyExtractor={(item) => item?._id}
+          contentContainerStyle={
+            data?.tasks.length === 0 ? styles.emptyListContainer : {}
+          }
           renderItem={({ item, index }) => (
-            <View style={styles.taskCard}>
-              <View style={styles.taskInfo}>
-                <Text style={styles.taskTitle}>{item.taskSubject}</Text>
-                <Text style={styles.taskDescription}>{item.description}</Text>
-                <Text style={styles.taskDate}>
-                  {item.startDate} → {item.endDate}
-                </Text>
-              </View>
-              <TouchableOpacity onPress={() => confirmDeleteTask(item, index)}>
-                <MaterialIcons name="delete" size={24} color="red" />
-              </TouchableOpacity>
-            </View>
+            <TaskCard
+              item={item}
+              handleDelete={confirmDeleteTask}
+              onPress={handlePress}
+            />
           )}
+          ListEmptyComponent={
+            <EmptyComponent
+              title="No Tasks Available!"
+              description="Stay productive by adding a new task."
+            />
+          }
         />
-      )}
 
-      {/* Delete Confirmation Modal */}
-      <Modal visible={isModalVisible} transparent animationType="slide">
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Confirm Delete</Text>
-            <Text style={styles.modalText}>
-              Are you sure you want to delete this task:{" "}
-              <Text style={styles.taskName}>
-                {selectedTask?.task.taskSubject}?
-              </Text>
-            </Text>
-
-            <View style={styles.modalButtons}>
-              <TouchableOpacity
-                style={[styles.modalButton, styles.cancelButton]}
-                onPress={() => setIsModalVisible(false)}
-              >
-                <Text style={styles.cancelText}>Cancel</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={[styles.modalButton, styles.deleteButton]}
-                onPress={deleteTask}
-              >
-                <Text style={styles.deleteText}>Delete</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </Modal>
-    </View>
+        <ConfirmationModal
+          isVisible={isModalVisible}
+          handleCancel={handleCloseModal}
+          title="Confirm Delete"
+          description={`Are you sure you want to delete this task: ?`}
+          handleConfirm={handleDeleteTask}
+          isLoading={deleteTaskLoading}
+        />
+      </View>
+    </Safewrapper>
   );
 };
 
@@ -114,111 +114,12 @@ export default MyTasks;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F5F5F5",
-    paddingHorizontal: 20,
-    paddingTop: 20
+    paddingHorizontal: 16,
+    paddingTop: 16
   },
-  header: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "#5F33E1",
-    textAlign: "center",
-    marginBottom: 20
-  },
-  noTasks: {
-    fontSize: 18,
-    textAlign: "center",
-    color: "#888",
-    marginTop: 50
-  },
-  taskCard: {
-    backgroundColor: "white",
-    padding: 15,
-    borderRadius: 10,
-    marginBottom: 10,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 3,
-    elevation: 3
-  },
-  taskInfo: {
-    flex: 1
-  },
-  taskTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#333"
-  },
-  taskDescription: {
-    fontSize: 14,
-    color: "#555",
-    marginVertical: 5
-  },
-  taskDate: {
-    fontSize: 12,
-    color: "#888"
-  },
-
-  // Modal Styles
-  modalContainer: {
-    flex: 1,
+  emptyListContainer: {
+    flexGrow: 1,
     justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0,0,0,0.5)"
-  },
-  modalContent: {
-    backgroundColor: "white",
-    padding: 20,
-    borderRadius: 10,
-    width: "80%",
     alignItems: "center"
-  },
-  modalTitle: {
-    fontSize: 22,
-    fontWeight: "bold",
-    color: "#5F33E1",
-    marginBottom: 10
-  },
-  modalText: {
-    fontSize: 16,
-    textAlign: "center",
-    color: "#333",
-    marginBottom: 20
-  },
-  taskName: {
-    fontWeight: "bold",
-    color: "red"
-  },
-  modalButtons: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    width: "100%"
-  },
-  modalButton: {
-    flex: 1,
-    paddingVertical: 10,
-    alignItems: "center",
-    borderRadius: 10,
-    marginHorizontal: 5
-  },
-  cancelButton: {
-    backgroundColor: "#ccc"
-  },
-  deleteButton: {
-    backgroundColor: "red"
-  },
-  cancelText: {
-    color: "#333",
-    fontWeight: "bold",
-    fontSize: 16
-  },
-  deleteText: {
-    color: "white",
-    fontWeight: "bold",
-    fontSize: 16
   }
 });
