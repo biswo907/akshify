@@ -14,6 +14,8 @@ export const RouterConstant = {
   THEME: "theme",
   LANGUAGE: "language",
   SETTINGS: "settings",
+  EDITPROFILE: "editprofile",
+  EMPLOYEES: "employees",
   TASKDETAILS: "taskdetails",
   EDITTASK: "edittask"
 };

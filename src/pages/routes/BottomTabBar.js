@@ -2,10 +2,10 @@ import { StyleSheet } from "react-native";
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Home from "../Home";
-import Profile from "../Profile";
 import CreateTask from "../Task/CreateTask";
 import { Ionicons } from "@expo/vector-icons"; // Import Ionicons
 import { RouterConstant } from "../../constants/RouterConstant";
+import ProfileScreen from "../profile/Profile";
 
 const Tab = createBottomTabNavigator();
 
@@ -54,7 +54,7 @@ const BottomTabBar = () => {
     >
       <Tab.Screen name={RouterConstant.HOME} component={Home} />
       <Tab.Screen name={RouterConstant.CREATE} component={CreateTask} />
-      <Tab.Screen name={RouterConstant.PROFILE} component={Profile} />
+      <Tab.Screen name={RouterConstant.PROFILE} component={ProfileScreen} />
     </Tab.Navigator>
   );
 };

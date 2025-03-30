@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -7,63 +7,71 @@ import {
   StyleSheet
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import Safewrapper from "../shared/Safewrapper";
-import AppHeader from "../shared/Header";
+import Safewrapper from "../../shared/Safewrapper";
+import AppHeader from "../../shared/Header";
 import {
   AntDesign,
   MaterialIcons,
   Ionicons,
   Feather
 } from "@expo/vector-icons";
+import ChangePasswordModal from "./modals/ChangePasswordModal";
+import DeleteAccountModal from "./modals/DeleteAccountModal";
 
 const settingsOptions = [
   {
-    id: "1",
-    title: "Account Settings",
-    icon: <AntDesign name="user" size={20} color="#007BFF" />
-  },
-  {
-    id: "2",
-    title: "Notification Settings",
-    icon: <Ionicons name="notifications-outline" size={20} color="#007BFF" />
-  },
-  {
-    id: "3",
-    title: "Privacy Policy",
-    icon: <MaterialIcons name="privacy-tip" size={20} color="#007BFF" />
-  },
-  {
-    id: "4",
-    title: "Security & Password",
+    id: 1,
+    title: "Change Password",
     icon: <Feather name="lock" size={20} color="#007BFF" />
   },
   {
-    id: "5",
+    id: 2,
+    title: "Delete Account",
+    icon: <AntDesign name="deleteuser" size={24} color="red" />
+  },
+
+  {
+    id: 3,
     title: "App Updates",
     icon: <Ionicons name="cloud-download-outline" size={20} color="#007BFF" />
-  },
-  {
-    id: "6",
-    title: "Help & Support",
-    icon: <Feather name="help-circle" size={20} color="#007BFF" />
-  },
-  {
-    id: "7",
-    title: "About Us",
-    icon: <AntDesign name="infocirlceo" size={20} color="#007BFF" />
-  },
-  {
-    id: "8",
-    title: "Terms & Conditions",
-    icon: <MaterialIcons name="article" size={20} color="#007BFF" />
   }
 ];
 
 const SettingsScreen = () => {
   const navigation = useNavigation();
 
+  const [isVisible, setIsVisible] = useState({
+    changePassword: false,
+    deleteAccount: false
+  });
+
+  const handleModal = type => {
+    if (type === 1) {
+      setIsVisible(prevState => ({
+        ...prevState,
+        changePassword: !prevState.changePassword
+      }));
+    }
+    if (type === 2) {
+      setIsVisible(prevState => ({
+        ...prevState,
+        deleteAccount: !prevState.deleteAccount
+      }));
+    }
+  };
+
   return (
     <Safewrapper>
+      {/* Modals */}
+      <ChangePasswordModal
+        isVisible={isVisible.changePassword}
+        onClose={() => handleModal(1)}
+      />
+      <DeleteAccountModal
+        isVisible={isVisible.deleteAccount}
+        onClose={() => handleModal(2)}
+      />
+
       {/* Header */}
       <AppHeader title="Settings" handleBack={() => navigation.goBack()} />
 
@@ -72,7 +80,11 @@ const SettingsScreen = () => {
         data={settingsOptions}
         keyExtractor={item => item.id}
         renderItem={({ item }) =>
-          <TouchableOpacity style={styles.card} activeOpacity={0.8}>
+          <TouchableOpacity
+            onPress={() => handleModal(item?.id)}
+            style={styles.card}
+            activeOpacity={0.8}
+          >
             <View style={styles.iconContainer}>
               {item.icon}
             </View>

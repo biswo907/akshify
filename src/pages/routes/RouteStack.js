@@ -12,15 +12,17 @@ import MyTasks from "../Task/MyTasks";
 import Policy from "../Policy";
 import Notification from "../Notification";
 import Help from "../Help";
-import About from "../About";
+import About from "../profile/About";
 import SigninScreen from "../auth/Login";
 import { useSelector } from "react-redux";
 import ThemeSettingsScreen from "../Theme";
 import LanguageScreen from "../Language";
-import SettingsScreen from "../Setting";
 import { useGetActiveTasksQuery } from "../../redux/services/taskService";
 import TaskDetailsScreen from "../Task/TaskDetails";
 import EditTaskScreen from "../Task/EditTask";
+import SettingsScreen from "../settings/Setting";
+import EditProfile from "../profile/EditProfile";
+import Employees from "../employee/Employees";
 
 const Stack = createNativeStackNavigator();
 
@@ -104,6 +106,16 @@ export const RouteStack = () => {
         <Stack.Screen
           name={RouterConstant.ABOUT}
           component={About}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name={RouterConstant.EDITPROFILE}
+          component={EditProfile}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name={RouterConstant.EMPLOYEES}
+          component={Employees}
           options={{ headerShown: false }}
         />
         <Stack.Screen

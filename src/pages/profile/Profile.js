@@ -17,23 +17,22 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { LinearGradient } from "expo-linear-gradient";
-import { RouterConstant } from "../constants/RouterConstant";
-import ConfirmationModal from "../shared/ConfirmationModal";
+import ConfirmationModal from "../../shared/ConfirmationModal";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDispatch, useSelector } from "react-redux";
-import { logOutUser } from "../redux/reducers/authSlice";
+import { logOutUser } from "../../redux/reducers/authSlice";
+import { RouterConstant } from "../../constants/RouterConstant";
 
 const ProfileScreen = () => {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
-  const dispatch =useDispatch()
-  const { user } = useSelector(state => state.auth);
-
+  const dispatch = useDispatch();
+  const { user } = useSelector((state) => state.auth);
 
   const [isVisible, setIsVisible] = useState(false);
 
   const handleLogout = async () => {
-    dispatch(logOutUser())
+    dispatch(logOutUser());
     navigation.replace(RouterConstant.SIGNUP);
   };
 
@@ -52,14 +51,34 @@ const ProfileScreen = () => {
       icon: "setting",
       route: RouterConstant.SETTINGS
     },
-    { id: 3, title: "Theme", subTitle: "Change your app theme", icon: "skin",route: RouterConstant.THEME },
     {
-      id: 4,
-      title: "Language",
-      subTitle: "Change app language",
-      icon: "earth",
-      route: RouterConstant.LANGUAGE
+      id: 12,
+      title: "Edit Profile",
+      subTitle: "Edit Your Profile",
+      icon: "edit",
+      route: RouterConstant.EDITPROFILE
     },
+    {
+      id: 22,
+      title: "Your Employee",
+      subTitle: "Check Your Employee list here",
+      icon: "team",
+      route: RouterConstant.EMPLOYEES
+    },
+    // {
+    //   id: 3,
+    //   title: "Theme",
+    //   subTitle: "Change your app theme",
+    //   icon: "skin",
+    //   route: RouterConstant.THEME
+    // },
+    // {
+    //   id: 4,
+    //   title: "Language",
+    //   subTitle: "Change app language",
+    //   icon: "earth",
+    //   route: RouterConstant.LANGUAGE
+    // },
     {
       id: 5,
       title: "Notifications",
@@ -142,9 +161,9 @@ const ProfileScreen = () => {
               </Text>
             </View>
           </View>
-          <View>
+          <TouchableOpacity onPress={()=>navigation.navigate(RouterConstant.EDITPROFILE)}>
             <AntDesign name="edit" size={24} color="white" />
-          </View>
+          </TouchableOpacity>
         </View>
       </LinearGradient>
       <View style={{ flex: 1, backgroundColor: "#f0f0f0" }}>

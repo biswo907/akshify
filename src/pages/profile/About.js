@@ -1,8 +1,8 @@
 import { StyleSheet, Text, View, ScrollView } from "react-native";
 import React from "react";
-import Safewrapper from "../shared/Safewrapper";
-import aboutData from "../../assets/data/about.json"; // Import JSON
-import AppHeader from "../shared/Header";
+import Safewrapper from "../../shared/Safewrapper";
+import aboutData from "../../../assets/data/about.json"; // Import JSON
+import AppHeader from "../../shared/Header";
 
 const About = () => {
   return (
