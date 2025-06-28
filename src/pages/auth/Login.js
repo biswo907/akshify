@@ -2,187 +2,164 @@ import {
   StyleSheet,
   Text,
   View,
-  TextInput,
-  Keyboard,
   KeyboardAvoidingView,
-  TouchableWithoutFeedback,
-  ImageBackground,
-  TouchableOpacity
+  ScrollView,
+  Platform,
+  Alert,
+  Pressable
 } from "react-native";
 import React, { useState } from "react";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import Safewrapper from "../../shared/Safewrapper";
+import CustomButton from "../../shared/CustomButton";
+import { useLoginMutation, useRegisterMutation } from "../../redux/services/authService";
+import { useDispatch } from "react-redux";
+import { setIsLogin, setToken, setUser } from "../../redux/reducers/authSlice";
 import { useNavigation } from "@react-navigation/native";
 import { RouterConstant } from "../../constants/RouterConstant";
-import CustomButton from "../../components/CustomButton";
 import { showToast } from "../../utils/Toast";
-import Icon from "react-native-vector-icons/Feather"; // Import icon
-import { StatusBar } from "expo-status-bar";
-import { GoogleSignin } from "@react-native-google-signin/google-signin";
-import { useLoginMutation } from "../../redux/services/authService";
-import { setIsLogin, setToken, setUser } from "../../redux/reducers/authSlice";
-import { useDispatch } from "react-redux";
-
-GoogleSignin.configure({
-  webClientId: `716771364474-1q7n55h7phgrej82ionuiehi2mnt4j5i.apps.googleusercontent.com`,
-  scopes: ["https://www.googleapis.com/auth/drive.readonly"],
-  offlineAccess: true,
-  forceCodeForRefreshToken: true
-});
+import CustomInput from "../../shared/CustomInput";
+import { useFormik } from "formik";
+import { LoginValidationSchema, SignupValidationSchema } from "../../validation/signupSchema";
 
 const SigninScreen = () => {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [isPasswordVisible, setIsPasswordVisible] = useState(false); // State for toggling password visibility
-  const navigation = useNavigation();
   const dispatch = useDispatch();
+  navigation = useNavigation();
 
-  const [login, { isLoading }] = useLoginMutation();
-
-
-  const resetAndNavigate = (newPath) => {
-    navigation.reset({
-      index: 0,
-      routes: [{ name: typeof newPath === 'string' ? newPath : newPath.pathname, params: typeof newPath === 'object' ? newPath.params : {} }],
-    });
-  };
   
 
-  const handleSignup = async () => {
-    if (!username || !password) {
-      showToast("Username and password are required.");
-      return;
-    }
-    try {
-      const response = await login({
-        email: username,
-        password: password
-      }).unwrap();
-      dispatch(setIsLogin(true));
-      dispatch(setUser(response?.user));
-      dispatch(setToken(response?.token));
-      navigation.reset({
-        index: 0, 
-        routes: [{ name: RouterConstant.TABS }], 
-      });
-      showToast("Login successfully!");
-    } catch (error) {
-      showToast(error?.data?.message);
-    }
+  const initialValues = {
+    email: "biswo1@gmail.com",
+    password: "123456",
   };
 
-  const image = {
-    uri: `https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRGTAKuHtTIBATCYZ_VkurIx1bN9rE3Sr9xGw&s`
-  };
+ const [login, { isLoading }] = useLoginMutation();
+
+  const {
+    values,
+    handleBlur,
+    handleChange,
+    handleSubmit,
+    errors,
+    touched,
+    setFieldValue
+  } = useFormik({
+    initialValues: initialValues,
+    validationSchema: LoginValidationSchema,
+    onSubmit: async (values) => {
+      try {
+        const response = await login({
+          email: values.email,
+          password: values.password,
+        }).unwrap();
+
+        dispatch(setIsLogin(true));
+        dispatch(setUser(response?.user));
+        dispatch(setToken(response?.token));
+        navigation.reset({
+          index: 0,
+          routes: [{ name: RouterConstant.TABS }]
+        });
+        console.log("Success",response);
+        
+        showToast("Success", "Account created successfully!");
+      } catch (error) {
+        console.log("Signup Error:", error);
+        Alert.alert(
+          "Login Failed",
+          error?.data?.message || "Something went wrong!"
+        );
+      }
+    }
+  });
+
+  
 
   return (
-    <ImageBackground source={image} style={styles.backgroundImage}>
-      <StatusBar translucent />
-      <KeyboardAvoidingView style={styles.container} behavior="padding">
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-          <View style={styles.innerContainer}>
-            <Text style={styles.title}>Login</Text>
+    <Safewrapper colors={["#7A5AE9", "#B892F0"]}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 0}
+        style={styles.keyboardAvoidingView}
+      >
+        <ScrollView
+          contentContainerStyle={styles.scrollView}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View style={styles.container}>
+            {/* <Text style={styles.title}> Company / User Login !!</Text> */}
 
-            {/* Username Input */}
-            <TextInput
-              style={styles.input}
-              placeholder="Username"
-              value={username}
-              onChangeText={setUsername}
+           
+            
+            <CustomInput
+              label="Email :"
+              value={values.email}
+              onChangeText={handleChange("email")}
+              onBlur={handleBlur("email")}
+              errorMessage={errors.email && touched.email && errors.email}
             />
+            <CustomInput
+              label="Password :"
+              value={values.password}
+              onChangeText={handleChange("password")}
+              onBlur={handleBlur("password")}
+              errorMessage={
+                errors.password && touched.password && errors.password
+              }
+            />
+           
 
-            {/* Password Input with Toggle */}
-            <View style={styles.passwordContainer}>
-              <TextInput
-                style={styles.passwordInput}
-                placeholder="Password"
-                value={password}
-                onChangeText={setPassword}
-                secureTextEntry={!isPasswordVisible}
+            <View style={styles.buttonContainer}>
+              <CustomButton
+                colors={["#5669FF", "#5669FF"]}
+                title={"Login"}
+                onPress={handleSubmit}
+                isLoading={isLoading} // Shows loader while signing up
               />
-              <TouchableOpacity
-                onPress={() => setIsPasswordVisible(!isPasswordVisible)}
-                style={styles.eyeIcon}
-              >
-                <Icon
-                  name={isPasswordVisible ? "eye" : "eye-off"}
-                  size={14}
-                  color="#666"
-                />
-              </TouchableOpacity>
+
+           
             </View>
-
-            <CustomButton title={"Login"} onPress={handleSignup} />
-
-            {/* <GoogleSigninButton
-                style={styles.googleButton}
-                size={GoogleSigninButton.Size.Wide}
-                color={GoogleSigninButton.Color.Dark}
-                onPress={signIn}
-              /> */}
           </View>
-        </TouchableWithoutFeedback>
+        </ScrollView>
       </KeyboardAvoidingView>
-    </ImageBackground>
+    </Safewrapper>
   );
 };
 
 export default SigninScreen;
 
 const styles = StyleSheet.create({
-  backgroundImage: {
-    flex: 1,
-    resizeMode: "cover",
-    justifyContent: "center"
+  keyboardAvoidingView: {
+    flex: 1
+  },
+  scrollView: {
+    flexGrow: 1
   },
   container: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center"
-  },
-  innerContainer: {
-    width: "90%",
-    backgroundColor: "white",
-    borderRadius: 10,
     padding: 20,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.8,
-    shadowRadius: 2,
-    elevation: 5
+    justifyContent: "center"
   },
   title: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: "bold",
-    marginBottom: 20,
-    textAlign: "center"
+    color: "#fff",
+    textAlign: "center",
+    marginBottom: 20
   },
-  input: {
-    height: 40,
-    borderColor: "#ccc",
-    borderWidth: 1,
-    borderRadius: 5,
-    marginBottom: 15,
-    paddingHorizontal: 10
+  buttonContainer: {
+    marginTop: 10,
+    marginBottom: 40
   },
-  passwordContainer: {
+  loginWrapper: {
+    display: "flex",
     flexDirection: "row",
+    gap: 10,
     alignItems: "center",
-    borderColor: "#ccc",
-    borderWidth: 1,
-    borderRadius: 5,
-    marginBottom: 15,
-    paddingHorizontal: 10
+    justifyContent: "center",
+    marginVertical: 10
   },
-  passwordInput: {
-    flex: 1,
-    height: 40
-  },
-  eyeIcon: {
-    padding: 8
-  },
-  googleButton: {
-    width: "100%",
-    height: 48,
-    marginTop: 20
+  loginText: {
+    color: "#f7f7f7",
+    fontSize: 18
   }
 });

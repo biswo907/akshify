@@ -23,19 +23,19 @@ const TaskCard = ({ item, handleDelete, onPress }) => {
         <View style={styles.taskDateContainer}>
           <View style={styles.dateItem}>
             <MaterialIcons name="event" size={18} color="#4CAF50" />
-            <Text style={styles.taskDateLabel}>From:</Text>
+            <Text style={styles.taskDateLabel}>Date:</Text>
             <Text style={styles.taskDate}>
               {moment(item.startDate).format("MMM D, YYYY")}
             </Text>
           </View>
 
-          <View style={styles.dateItem}>
+          {/* <View style={styles.dateItem}>
             <MaterialIcons name="event" size={18} color="#4CAF50" />
             <Text style={styles.taskDateLabel}>To:</Text>
             <Text style={styles.taskDate}>
               {moment(item.endDate).format("MMM D, YYYY")}
             </Text>
-          </View>
+          </View> */}
         </View>
       </View>
 

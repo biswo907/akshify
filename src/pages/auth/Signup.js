@@ -10,7 +10,6 @@ import {
 } from "react-native";
 import React, { useState } from "react";
 import Safewrapper from "../../shared/Safewrapper";
-import CustomTextInput from "../../shared/CustomTextInput";
 import CustomButton from "../../shared/CustomButton";
 import { useRegisterMutation } from "../../redux/services/authService";
 import { useDispatch } from "react-redux";
@@ -18,79 +17,76 @@ import { setIsLogin, setToken, setUser } from "../../redux/reducers/authSlice";
 import { useNavigation } from "@react-navigation/native";
 import { RouterConstant } from "../../constants/RouterConstant";
 import { showToast } from "../../utils/Toast";
+import CustomInput from "../../shared/CustomInput";
+import { useFormik } from "formik";
+import { SignupValidationSchema } from "../../validation/signupSchema";
 
 const SignupScreen = () => {
   const dispatch = useDispatch();
   navigation = useNavigation();
 
-  const [form, setForm] = useState({
-    full_name: "",
+  const initialValues = {
+    companyName: "",
     username: "",
     phone: "",
     email: "",
     password: "",
     confirm_password: ""
-  });
+  };
 
   const [register, { isLoading }] = useRegisterMutation();
 
-  const handleChange = (name, value) => {
-    setForm({ ...form, [name]: value });
-  };
+  const {
+    values,
+    handleBlur,
+    handleChange,
+    handleSubmit,
+    errors,
+    touched,
+    setFieldValue
+  } = useFormik({
+    initialValues: initialValues,
+    validationSchema: SignupValidationSchema,
+    onSubmit: async (values) => {
+      try {
+        const response = await register({
+          full_name: values.companyName,
+          username: values.username,
+          phone: values.phone,
+          email: values.email,
+          password: values.password,
+          confirm_password: values.confirm_password,
+          type: "company"
+        }).unwrap();
+
+        dispatch(setIsLogin(true));
+        dispatch(setUser(response?.user));
+        dispatch(setToken(response?.token));
+        navigation.reset({
+          index: 0,
+          routes: [{ name: RouterConstant.TABS }]
+        });
+        console.log("Success",response);
+        
+        showToast("Success", "Account created successfully!");
+      } catch (error) {
+        // console.error("Signup Error:", error);
+        Alert.alert(
+          "Signup Failed",
+          error?.data?.message || "Something went wrong!"
+        );
+      }
+    }
+  });
 
   const handleLogin = () => {
     navigation.navigate(RouterConstant.SIGNIN);
   };
 
-  const handleSignup = async () => {
-    if (
-      !form.full_name ||
-      !form.username ||
-      !form.phone ||
-      !form.email ||
-      !form.password ||
-      !form.confirm_password
-    ) {
-      showToast("All fields are required!");
-      return;
-    }
-
-    if (form.password !== form.confirm_password) {
-      showToast("Passwords do not match!");
-      return;
-    }
-
-    try {
-      const response = await register({
-        full_name: form.full_name,
-        username: form.username,
-        phone: form.phone,
-        email: form.email,
-        password: form.password,
-        confirm_password: form.confirm_password
-      }).unwrap();
-
-      dispatch(setIsLogin(true));
-      dispatch(setUser(response?.user));
-      dispatch(setToken(response?.token));
-      navigation.reset({
-        index: 0,
-        routes: [{ name: RouterConstant.TABS }]
-      });
-      showToast("Success", "Account created successfully!");
-    } catch (error) {
-      console.error("Signup Error:", error);
-      Alert.alert(
-        "Signup Failed",
-        error?.data?.message || "Something went wrong!"
-      );
-    }
-  };
-
   const bgcolor = `rgba(255, 255, 255, 0.2)`;
 
   return (
-    <Safewrapper>
+    <Safewrapper colors={["#7A5AE9", "#B892F0"]}>
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 0}
@@ -101,55 +97,68 @@ const SignupScreen = () => {
           keyboardShouldPersistTaps="handled"
         >
           <View style={styles.container}>
-            <Text style={styles.title}>Sign Up</Text>
+            <Text style={styles.title}> Company Registration !!</Text>
 
-            <CustomTextInput
-              placeholder="Full Name"
-              value={form.full_name}
-              onChangeText={(text) => handleChange("full_name", text)}
-              backgroundColor={bgcolor}
+            <CustomInput
+              label="Company Name :"
+              value={values.companyName}
+              onChangeText={handleChange("companyName")}
+              onBlur={handleBlur("companyName")}
+              errorMessage={
+                errors.companyName && touched.companyName && errors.companyName
+              }
             />
-            <CustomTextInput
-              placeholder="Username"
-              value={form.username}
-              onChangeText={(text) => handleChange("username", text)}
-              backgroundColor={bgcolor}
+            <CustomInput
+              label="User Name :"
+              value={values.username}
+              onChangeText={handleChange("username")}
+              onBlur={handleBlur("username")}
+              errorMessage={
+                errors.username && touched.username && errors.username
+              }
             />
-            <CustomTextInput
-              placeholder="Phone"
-              keyboardType="phone-pad"
-              value={form.phone}
-              onChangeText={(text) => handleChange("phone", text)}
-              backgroundColor={bgcolor}
+            <CustomInput
+              label="Mobile No :"
+              value={values.phone}
               maxLength={10}
+              keyboardType="number"
+              onChangeText={handleChange("phone")}
+              onBlur={handleBlur("phone")}
+              errorMessage={errors.phone && touched.phone && errors.phone}
             />
-            <CustomTextInput
-              placeholder="Email"
-              keyboardType="email-address"
-              value={form.email}
-              onChangeText={(text) => handleChange("email", text)}
-              backgroundColor={bgcolor}
+            <CustomInput
+              label="Email :"
+              value={values.email}
+              onChangeText={handleChange("email")}
+              onBlur={handleBlur("email")}
+              errorMessage={errors.email && touched.email && errors.email}
             />
-            <CustomTextInput
-              placeholder="Password"
-              secureTextEntry
-              value={form.password}
-              onChangeText={(text) => handleChange("password", text)}
-              backgroundColor={bgcolor}
+            <CustomInput
+              label="Password :"
+              value={values.password}
+              onChangeText={handleChange("password")}
+              onBlur={handleBlur("password")}
+              errorMessage={
+                errors.password && touched.password && errors.password
+              }
             />
-            <CustomTextInput
-              placeholder="Confirm Password"
-              secureTextEntry
-              value={form.confirm_password}
-              onChangeText={(text) => handleChange("confirm_password", text)}
-              backgroundColor={bgcolor}
+            <CustomInput
+              label="Confirm Password :"
+              value={values.confirm_password}
+              onChangeText={handleChange("confirm_password")}
+              onBlur={handleBlur("confirm_password")}
+              errorMessage={
+                errors.confirm_password &&
+                touched.confirm_password &&
+                errors.confirm_password
+              }
             />
 
             <View style={styles.buttonContainer}>
               <CustomButton
-                colors={["#FFD700", "#FFA500"]}
+                colors={["#5669FF", "#5669FF"]}
                 title={"Signup"}
-                onPress={handleSignup}
+                onPress={handleSubmit}
                 isLoading={isLoading} // Shows loader while signing up
               />
 

@@ -10,10 +10,10 @@ const EmployeCard = ({ item, onPress }) => {
     >
       <View style={styles.taskContent}>
         <Text style={styles.taskTitle}>
-          {item.name}
+          {item.full_name}
         </Text>
         <Text style={styles.taskDescription}>
-          {item.task}
+          {item.phone}
         </Text>
       </View>
     </TouchableOpacity>

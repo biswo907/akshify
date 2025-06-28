@@ -23,20 +23,14 @@ import EditTaskScreen from "../Task/EditTask";
 import SettingsScreen from "../settings/Setting";
 import EditProfile from "../profile/EditProfile";
 import Employees from "../employee/Employees";
+import CreateProfile from "../profile/CreateProfile";
 
 const Stack = createNativeStackNavigator();
 
 export const RouteStack = () => {
   const [showEmptyScreen, setShowEmptyScreen] = useState(true);
 
-  const { isLogin, user } = useSelector((state) => state.auth);
-
-  const { data, error, isLoading } = useGetActiveTasksQuery({
-    userId: user?.userId
-  });
-
-  console.log("DATA", data);
-  console.log("ERROR", error?.data?.status);
+  const { isLogin, user } = useSelector(state => state.auth);
 
   useEffect(() => {
     // Show empty screen for 2 seconds
@@ -45,22 +39,18 @@ export const RouteStack = () => {
     }, 1000);
   }, []);
 
-  if (showEmptyScreen || isLoading) {
+  if (showEmptyScreen) {
     return <SplashScreen />;
   }
 
   if (isLogin === null) {
-    return <SplashScreen />; // Optional loading screen while checking login
+    return <SplashScreen />;
   }
 
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName={
-          isLogin && !(error?.status === 401)
-            ? RouterConstant.TABS
-            : RouterConstant.SIGNUP
-        }
+        initialRouteName={isLogin ? RouterConstant.TABS : RouterConstant.SIGNUP}
       >
         <Stack.Screen
           name={RouterConstant.TABS}
@@ -141,6 +131,11 @@ export const RouteStack = () => {
         <Stack.Screen
           name={RouterConstant.EDITTASK}
           component={EditTaskScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name={RouterConstant.CREATEPROFILE}
+          component={CreateProfile}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>

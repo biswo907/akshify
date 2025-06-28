@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -13,14 +13,31 @@ import {
 } from "react-native";
 import Safewrapper from "../../shared/Safewrapper";
 import AppHeader from "../../shared/Header";
+import { useSelector } from "react-redux";
 
 const EditProfile = () => {
+  const { user } = useSelector(state => state.auth);
+
   const [profile, setProfile] = useState({
-    full_name: "Biswo",
-    username: "biswo",
-    phone: "878049999",
-    email: "biswoh0@example.com"
+    full_name: "",
+    username: "",
+    phone: "",
+    email: ""
   });
+
+  useEffect(
+    () => {
+      if (user) {
+        setProfile({
+          full_name: user.full_name,
+          username: user.username,
+          phone: user.phone,
+          email: user.email
+        });
+      }
+    },
+    [user]
+  );
 
   const handleChange = (key, value) => {
     setProfile({ ...profile, [key]: value });

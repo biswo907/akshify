@@ -59,6 +59,13 @@ const ProfileScreen = () => {
       route: RouterConstant.EDITPROFILE
     },
     {
+      id: 72,
+      title: "Create Profile",
+      subTitle: "Create Your Employee's Profile",
+      icon: "adduser",
+      route: RouterConstant.CREATEPROFILE
+    },
+    {
       id: 22,
       title: "Your Employee",
       subTitle: "Check Your Employee list here",

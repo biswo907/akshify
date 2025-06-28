@@ -85,7 +85,7 @@ const MyTasks = ({ route }) => {
             <TaskCard
               item={item}
               handleDelete={confirmDeleteTask}
-              onPress={handlePress}
+              // onPress={handlePress}
             />
           )}
           ListEmptyComponent={
@@ -100,7 +100,7 @@ const MyTasks = ({ route }) => {
           isVisible={isModalVisible}
           handleCancel={handleCloseModal}
           title="Confirm Delete"
-          description={`Are you sure you want to delete this task: ?`}
+          description={`Are you sure you want to delete this task?`}
           handleConfirm={handleDeleteTask}
           isLoading={deleteTaskLoading}
         />
