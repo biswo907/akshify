@@ -24,6 +24,7 @@ const CustomTextInput = ({
   errorMessage,
   numberOfLines,
   multiline,
+  onPress,
   ...rest
 }) => {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
@@ -37,7 +38,11 @@ const CustomTextInput = ({
           </Text>
         : null}
 
-      <View style={styles.inputWrapper}>
+      <TouchableOpacity
+        style={styles.inputWrapper}
+        activeOpacity={1}
+        onPress={onPress}
+      >
         <TextInput
           style={styles.input}
           placeholder={placeholder}
@@ -65,7 +70,7 @@ const CustomTextInput = ({
               color="#888"
             />
           </TouchableOpacity>}
-      </View>
+      </TouchableOpacity>
 
       {errorMessage &&
         <Text style={styles.error}>

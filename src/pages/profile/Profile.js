@@ -42,83 +42,96 @@ const ProfileScreen = () => {
       title: "My Tasks",
       subTitle: "Organize and track tasks",
       icon: "user",
-      route: RouterConstant.MYTASK
+      route: RouterConstant.MYTASK,
+      isShow: true
     },
-    {
-      id: 2,
-      title: "Settings",
-      subTitle: "Manage your app settings",
-      icon: "setting",
-      route: RouterConstant.SETTINGS
-    },
+    
     {
       id: 12,
       title: "Edit Profile",
       subTitle: "Edit Your Profile",
       icon: "edit",
-      route: RouterConstant.EDITPROFILE
+      route: RouterConstant.EDITPROFILE,
+      isShow: true
     },
     {
       id: 72,
-      title: "Create Profile",
+      title: "Create Employee",
       subTitle: "Create Your Employee's Profile",
       icon: "adduser",
-      route: RouterConstant.CREATEPROFILE
+      route: RouterConstant.CREATEEMPLOYEE,
+      isShow: user?.type == "company" ? true : false
     },
     {
       id: 22,
       title: "Your Employee",
       subTitle: "Check Your Employee list here",
       icon: "team",
-      route: RouterConstant.EMPLOYEES
+      route: RouterConstant.EMPLOYEES,
+      isShow: user?.type == "company" ? true : false
     },
-    // {
-    //   id: 3,
-    //   title: "Theme",
-    //   subTitle: "Change your app theme",
-    //   icon: "skin",
-    //   route: RouterConstant.THEME
-    // },
-    // {
-    //   id: 4,
-    //   title: "Language",
-    //   subTitle: "Change app language",
-    //   icon: "earth",
-    //   route: RouterConstant.LANGUAGE
-    // },
+    {
+      id: 3,
+      title: "Theme",
+      subTitle: "Change your app theme",
+      icon: "skin",
+      route: RouterConstant.THEME,
+      isShow: false
+    },
+    {
+      id: 4,
+      title: "Language",
+      subTitle: "Change app language",
+      icon: "earth",
+      route: RouterConstant.LANGUAGE,
+      isShow: false
+    },
     {
       id: 5,
       title: "Notifications",
       subTitle: "Manage notifications",
       icon: "notification",
-      route: RouterConstant.NOTIFICATION
+      route: RouterConstant.NOTIFICATION,
+      isShow: false
     },
     {
       id: 6,
       title: "Privacy & Security",
       subTitle: "Manage privacy settings",
       icon: "lock",
-      route: RouterConstant.POLICY
+      route: RouterConstant.POLICY,
+      isShow: false
     },
     {
       id: 7,
       title: "Help & Support",
       subTitle: "Get help",
       icon: "questioncircleo",
-      route: RouterConstant.HELP
+      route: RouterConstant.HELP,
+      isShow: false
     },
     {
       id: 8,
       title: "About",
       subTitle: "Learn more",
       icon: "infocirlceo",
-      route: RouterConstant.ABOUT
+      route: RouterConstant.ABOUT,
+      isShow: false
+    },
+    {
+      id: 2,
+      title: "Settings",
+      subTitle: "Manage your app settings",
+      icon: "setting",
+      route: RouterConstant.SETTINGS,
+      isShow: false
     },
     {
       id: 9,
       title: "Logout",
       subTitle: "Sign out of your account",
-      icon: "logout"
+      icon: "logout",
+      isShow: true
     }
   ];
 
@@ -161,14 +174,16 @@ const ProfileScreen = () => {
 
             <View>
               <Text style={{ color: "white", fontSize: 16, fontWeight: "600" }}>
-                Hello !!
+                Hello !! {user?.type == "company" ? "company" : "user"}
               </Text>
               <Text style={{ color: "white", fontSize: 14, fontWeight: "400" }}>
                 {user?.full_name}
               </Text>
             </View>
           </View>
-          <TouchableOpacity onPress={()=>navigation.navigate(RouterConstant.EDITPROFILE)}>
+          <TouchableOpacity
+            onPress={() => navigation.navigate(RouterConstant.EDITPROFILE)}
+          >
             <AntDesign name="edit" size={24} color="white" />
           </TouchableOpacity>
         </View>
@@ -189,7 +204,7 @@ const ProfileScreen = () => {
         >
           <FlatList
             showsVerticalScrollIndicator={false}
-            data={settingsData}
+ data={settingsData.filter((item) => item.isShow)}
             keyExtractor={(item) => item.id.toString()}
             renderItem={({ item, index }) => (
               <TouchableOpacity

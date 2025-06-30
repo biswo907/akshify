@@ -15,7 +15,7 @@ export const RouterConstant = {
   LANGUAGE: "language",
   SETTINGS: "settings",
   EDITPROFILE: "editprofile",
-  CREATEPROFILE: "createprofile",
+  CREATEEMPLOYEE: "createemployee",
   EMPLOYEES: "employees",
   TASKDETAILS: "taskdetails",
   EDITTASK: "edittask"

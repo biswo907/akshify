@@ -1,23 +1,27 @@
 import { StyleSheet, Text, View } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Safewrapper from "../../shared/Safewrapper";
 
 const SplashScreen = () => {
   const fullText = "Akshify";
   const [displayedText, setDisplayedText] = useState("");
+  const indexRef = useRef(0);
 
   useEffect(() => {
-    let index = 0;
     const interval = setInterval(() => {
-      if (index < fullText.length) {
-        setDisplayedText(prev => prev + fullText[index]);
-        index++;
-      } else {
-        clearInterval(interval);
-      }
-    }, 100); // Adjust speed (200ms per letter)
+      setDisplayedText(prev => {
+        if (indexRef.current < fullText.length) {
+          const nextChar = fullText[indexRef.current];
+          indexRef.current += 1;
+          return prev + nextChar;
+        } else {
+          clearInterval(interval);
+          return prev;
+        }
+      });
+    }, 100); // 100ms per letter
 
-    return () => clearInterval(interval);
+    return () => clearInterval(interval); // clean up
   }, []);
 
   return (

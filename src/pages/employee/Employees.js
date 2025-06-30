@@ -5,7 +5,8 @@ import AppHeader from "../../shared/Header";
 import EmployeCard from "./component/EmployeeCard";
 import { useNavigation } from "@react-navigation/native";
 import { RouterConstant } from "../../constants/RouterConstant";
-import { useEmployeeListQuery } from "../../redux/services/apiService";
+import { useEmployeeListQuery, useToggleEmployeeStatusMutation } from "../../redux/services/apiService";
+import { showToast } from "../../utils/Toast";
 
 const employees = [
   {
@@ -17,17 +18,42 @@ const employees = [
 const Employees = () => {
   const navigation = useNavigation();
 
-  const { data, isLoading, isError, error } = useEmployeeListQuery();
+  const { data, isLoading, isError, error,refetch } = useEmployeeListQuery();
 
-  console.log("--------------ISERROR",data);
-  
+const [toggleEmployeeStatus, { isLoading:isStatusLoading }] = useToggleEmployeeStatusMutation();  
 
   const handleDetails = () => {
     navigation.navigate(RouterConstant.TASKDETAILS);
   };
 
+  const handleToggleStatus = async (employee) => {
+  try {
+    await toggleEmployeeStatus({
+      userId: employee._id,
+      is_active: !employee.is_active,
+    }).unwrap();
+    showToast('Status updated successfully')
+    refetch()
+
+  } catch (err) {
+    showToast(err || 'Status updated successfully')
+  }
+};
+  
+
   const renderEmployee = ({ item }) => (
-    <EmployeCard item={item} onPress={handleDetails} />
+    <EmployeCard
+    disabled={!item.is_active}
+  item={item}
+  // onPress={() => navigation.navigate("EmployeeDetail", { id: employee._id })}
+  
+  onToggle={(item) => {
+    handleToggleStatus(item);
+    console.log('toggleEmployeeStatus',{ userId: item._id, is_active: !item.is_active });
+    
+  }}
+/>
+
   );
 
   const renderEmptyComponent = () => {

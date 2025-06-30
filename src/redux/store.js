@@ -4,7 +4,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { authApi } from "./services/authService";
 import { taskApi } from "./services/taskService";
 import authReducer from "./reducers/authSlice";
-import { employeeApi } from "./services/apiService";
+import { employeeService } from "./services/apiService";
 
 // Persist configuration
 const persistConfig = {
@@ -18,7 +18,7 @@ const rootReducer = combineReducers({
   auth: authReducer,
   [authApi.reducerPath]: authApi.reducer,
   [taskApi.reducerPath]: taskApi.reducer,
-  [employeeApi.reducerPath]: employeeApi.reducer
+  [employeeService.reducerPath]: employeeService.reducer
 });
 
 // Apply persistReducer to the root reducer
@@ -31,7 +31,11 @@ const store = configureStore({
     getDefaultMiddleware({
       immutableCheck: false,
       serializableCheck: false
-    }).concat(authApi.middleware, taskApi.middleware, employeeApi.middleware)
+    }).concat(
+      authApi.middleware,
+      taskApi.middleware,
+      employeeService.middleware
+    )
 });
 
 // Persist store

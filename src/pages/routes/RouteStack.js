@@ -23,7 +23,7 @@ import EditTaskScreen from "../Task/EditTask";
 import SettingsScreen from "../settings/Setting";
 import EditProfile from "../profile/EditProfile";
 import Employees from "../employee/Employees";
-import CreateProfile from "../profile/CreateProfile";
+import createEmployee from "../employee/CreateEmployee";
 
 const Stack = createNativeStackNavigator();
 
@@ -134,8 +134,8 @@ export const RouteStack = () => {
           options={{ headerShown: false }}
         />
         <Stack.Screen
-          name={RouterConstant.CREATEPROFILE}
-          component={CreateProfile}
+          name={RouterConstant.CREATEEMPLOYEE}
+          component={createEmployee}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>

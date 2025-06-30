@@ -18,6 +18,7 @@ const TaskCard = ({ item, handleDelete, onPress }) => {
 
         {/* Task Description */}
         <Text style={styles.taskDescription}>{item.description}</Text>
+        <Text style={styles.taskDescription}>{item.status}</Text>
 
         {/* Task Date Info */}
         <View style={styles.taskDateContainer}>
@@ -25,7 +26,7 @@ const TaskCard = ({ item, handleDelete, onPress }) => {
             <MaterialIcons name="event" size={18} color="#4CAF50" />
             <Text style={styles.taskDateLabel}>Date:</Text>
             <Text style={styles.taskDate}>
-              {moment(item.startDate).format("MMM D, YYYY")}
+              {moment(item.to_date).format("MMM D, YYYY")}
             </Text>
           </View>
 

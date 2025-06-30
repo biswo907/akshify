@@ -1,8 +1,8 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { BASE_URL } from '../../http/url';
 
-export const employeeApi = createApi({
-  reducerPath: 'employeeApi',
+export const employeeService = createApi({
+  reducerPath: 'employeeService',
   baseQuery: fetchBaseQuery({
     baseUrl: BASE_URL,
     prepareHeaders: (headers, { getState }) => {
@@ -14,25 +14,63 @@ export const employeeApi = createApi({
       return headers;
     },
   }),
+  tagTypes: ['Employee'], // For cache invalidation
   endpoints: (builder) => ({
+
+    // 🔹 Create a new employee
     createEmployee: builder.mutation({
       query: (data) => ({
         url: 'users/create-employee',
         method: 'POST',
         body: data,
       }),
+      invalidatesTags: ['Employee'],
     }),
 
+    // 🔹 Get all employees under a company
     employeeList: builder.query({
       query: () => ({
         url: 'users/list-employees',
         method: 'GET',
       }),
+      providesTags: ['Employee'],
     }),
+
+    // 🔹 Toggle active/inactive status of an employee
+    toggleEmployeeStatus: builder.mutation({
+      query: (data) => ({
+        url: 'users/toggle-status',
+        method: 'PATCH',
+        body: data, // expects { userId, is_active }
+      }),
+      invalidatesTags: ['Employee'],
+    }),
+
+    // 🔹 Get own profile (company or employee)
+    getProfile: builder.query({
+      query: () => ({
+        url: 'users/profile',
+        method: 'GET',
+      }),
+    }),
+
+    // 🔹 Update own profile
+    updateProfile: builder.mutation({
+      query: (data) => ({
+        url: 'users/update-profile',
+        method: 'PATCH',
+        body: data,
+      }),
+    }),
+
   }),
 });
 
+// ✅ Export hooks
 export const {
   useCreateEmployeeMutation,
   useEmployeeListQuery,
-} = employeeApi;
+  useToggleEmployeeStatusMutation,
+  useGetProfileQuery,
+  useUpdateProfileMutation,
+} = employeeService;

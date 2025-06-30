@@ -22,7 +22,7 @@ import { showToast } from "../../utils/Toast";
 import { useNavigation } from "@react-navigation/native";
 import { useCreateEmployeeMutation } from "../../redux/services/apiService";
 
-const CreateProfile = () => {
+const createEmployee = () => {
   const navigation = useNavigation();
 
   const [createEmployee, { isLoading }] = useCreateEmployeeMutation();
@@ -134,7 +134,7 @@ const CreateProfile = () => {
   );
 };
 
-export default CreateProfile;
+export default createEmployee;
 
 const styles = StyleSheet.create({
   keyboardContainer: {
