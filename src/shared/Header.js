@@ -3,7 +3,7 @@ import React from "react";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { useNavigation } from "@react-navigation/native";
 
-const AppHeader = ({ handleBack, title, color = "white" }) => {
+const AppHeader = ({ handleBack, title, color = "white", isBackDisable }) => {
   const navigation = useNavigation();
 
   const goBackHandler = () => {
@@ -16,10 +16,21 @@ const AppHeader = ({ handleBack, title, color = "white" }) => {
 
   return (
     <View style={styles.header}>
-      <Pressable onPress={goBackHandler} style={styles.backButton}>
-        <AntDesign name="leftcircle" size={24} color={color} />
-      </Pressable>
-      <Text style={[styles.headerTitle, { color }]}>
+      {!isBackDisable &&
+        <Pressable onPress={goBackHandler} style={styles.backButton}>
+          <AntDesign name="leftcircle" size={24} color={color} />
+        </Pressable>}
+      <Text
+        style={[
+          styles.headerTitle,
+          { color },
+          {
+            textAlign: "center",
+            width: isBackDisable && "100%",
+            marginTop: isBackDisable && 12
+          }
+        ]}
+      >
         {title}
       </Text>
     </View>
@@ -32,8 +43,9 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: "row",
     alignItems: "center",
-    padding: 16,
+    padding: 6,
     backgroundColor: "transparent"
+    // marginTop: 10
   },
   backButton: {
     padding: 8

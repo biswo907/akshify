@@ -6,7 +6,7 @@
     "orientation": "portrait",
     "icon": "./assets/appicon.png",
     "userInterfaceStyle": "light",
-    "newArchEnabled": false,
+    "newArchEnabled": true,
     "splash": {
       "image": "./assets/appicon.png",
       "resizeMode": "contain",
@@ -25,11 +25,7 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "plugins": [
-      [
-        "@react-native-google-signin/google-signin"
-      ]
-    ],
+    "plugins": [["@react-native-google-signin/google-signin"]],
     "extra": {
       "eas": {
         "projectId": "1d30d482-a8a7-46c2-baa9-d6e3a5d517fc"

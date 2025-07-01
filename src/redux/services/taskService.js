@@ -25,6 +25,13 @@ export const taskApi = createApi({
     getTask: builder.query({
       query: () => "/tasks/get-all-task"
     }),
+    updateTaskStatus: builder.mutation({
+      query: (payload) => ({
+        url: `tasks/update-task-status`,
+        method: "PATCH",
+        body:payload
+      })
+    }),
     updateTask: builder.mutation({
       query: (payload) => ({
         url: `tasks/update-task`,
@@ -34,6 +41,10 @@ export const taskApi = createApi({
     })
   })
 });
+export const {
+  useCreateTaskMutation,
+  useGetTaskQuery,
+  useUpdateTaskStatusMutation,
+  useUpdateTaskMutation,
+} = taskApi;
 
-export const { useCreateTaskMutation, useGetTaskQuery, useUpdateTaskMutation } =
-  taskApi;

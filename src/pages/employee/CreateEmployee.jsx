@@ -22,7 +22,7 @@ import { showToast } from "../../utils/Toast";
 import { useNavigation } from "@react-navigation/native";
 import { useCreateEmployeeMutation } from "../../redux/services/apiService";
 
-const createEmployee = () => {
+const CreateEmployee = () => {
   const navigation = useNavigation();
 
   const [createEmployee, { isLoading }] = useCreateEmployeeMutation();
@@ -67,7 +67,7 @@ const createEmployee = () => {
 
   return (
     <Safewrapper>
-      <AppHeader title={"Create Profile"} />
+      <AppHeader title={"Create Employee"} />
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -134,7 +134,7 @@ const createEmployee = () => {
   );
 };
 
-export default createEmployee;
+export default CreateEmployee;
 
 const styles = StyleSheet.create({
   keyboardContainer: {

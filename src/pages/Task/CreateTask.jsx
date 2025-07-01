@@ -27,13 +27,16 @@ import { useFormik } from "formik";
 import { createTaskValidationSchema } from "../../validation/signupSchema";
 import { useSelector } from "react-redux";
 import { date } from "yup";
+import AppHeader from "../../shared/Header";
+import { AssignUserModal } from "./component/assignUserModal";
 
 const CreateTask = () => {
   const [createTask, { isLoading }] = useCreateTaskMutation();
   const { user } = useSelector((state) => state.auth);
-  console.log("user", user?.type === "employee");
+  // console.log("user", user?.type);
 
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const [isShowSealModal, setIsShowSealMOdal] = useState(false);
 
   const isFocused = useIsFocused();
   const navigation = useNavigation();
@@ -41,7 +44,8 @@ const CreateTask = () => {
   const initialValues = {
     taskName: "",
     taskDescription: "",
-    date: ""
+    date: "",
+    assignedUsers: ""
   };
 
   const {
@@ -65,8 +69,8 @@ const CreateTask = () => {
       if (user?.type === "employee") {
         preparePayload.companyId = user?.companyId; //only employees are required to pass `companyId` in the body
       }
-      if (false) {
-        preparePayload.userId = "6862deb451c3a3308152df1d"; // if a commpany assign a user then pass
+      if (values?.assignedUsers?.length) {
+        preparePayload.userId = values?.assignedUsers?.join(", "); // if a commpany assign a user then pass
       }
       console.log("preparePayload", preparePayload);
 
@@ -100,6 +104,16 @@ const CreateTask = () => {
             behavior={Platform.OS === "ios" ? "padding" : "height"}
             style={styles.keyboardContainer}
           >
+            <AppHeader title={"Create Task"} isBackDisable />
+
+            <AssignUserModal
+              visible={isShowSealModal}
+              onClose={() => setIsShowSealMOdal(!isShowSealModal)}
+              onConfirm={(selectedSealIds) => {
+                setFieldValue("assignedUsers", selectedSealIds);
+              }}
+            />
+
             <ScrollView
               contentContainerStyle={styles.container2}
               keyboardShouldPersistTaps="handled"
@@ -152,6 +166,22 @@ const CreateTask = () => {
 
                       // setTaskDate(moment(selectedDate).format("YYYY-MM-DD"));
                     }
+                  }}
+                />
+              )}
+
+              {user?.type === "company" && (
+                <CustomTextInput
+                  label={"Assign User"}
+                  placeholder={
+                    values?.assignedUsers?.length
+                      ? values?.assignedUsers?.join(", ")
+                      : "Select"
+                  }
+                  editable={false}
+                  onPress={() => setIsShowSealMOdal(true)}
+                  onConfirm={(emp) => {
+                    setFieldValue("assignedUsers", emp);
                   }}
                 />
               )}

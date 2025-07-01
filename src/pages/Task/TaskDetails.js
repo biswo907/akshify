@@ -1,136 +1,160 @@
+import React from "react";
 import {
-  StyleSheet,
-  Text,
   View,
+  Text,
+  StyleSheet,
   ScrollView,
+  Alert,
   TouchableOpacity
 } from "react-native";
-import React from "react";
-import { Ionicons, MaterialIcons } from "@expo/vector-icons"; // Icons
-import { useNavigation } from "@react-navigation/native";
+import { useFormik } from "formik";
+import * as Yup from "yup";
 import Safewrapper from "../../shared/Safewrapper";
 import AppHeader from "../../shared/Header";
-import { RouterConstant } from "../../constants/RouterConstant";
+import CustomTextInput from "../../shared/CustomTextInput";
+import CustomButton from "../../shared/CustomButton";
+import { showToast } from "../../utils/Toast";
+import { Ionicons } from "@expo/vector-icons";
+import { useUpdateTaskMutation } from "../../redux/services/taskService";
+import { useSelector } from "react-redux";
 
-// Sample Task Data (Replace with API data)
-const taskData = {
-  _id: "67cc0c838a6093048b2f307d",
-  userId: "67cc0c72dc7d690e922096a0",
-  title: "Design Landing Page For Biswo",
-  description: "Create a responsive landing page for the product website.",
-  task_color: "#4A90E2",
-  task_font_family: "Arial",
-  description_color: "#333333",
-  description_font_family: "Verdana",
-  from_date: "2025-03-10T00:00:00.000Z",
-  to_date: "2025-03-15T00:00:00.000Z",
-  priority: "high",
-  status: "pending",
-  is_favorite: true
-};
+const statusOptions = ["in-progress", "completed"];
 
-const TaskDetailsScreen = () => {
-  const navigation = useNavigation();
+const validationSchema = Yup.object().shape({
+  taskName: Yup.string().required("Task name is required"),
+  taskDescription: Yup.string().required("Description is required"),
+  status: Yup.string().oneOf(statusOptions).required("Status is required")
+});
+
+const TaskDetailsScreen = ({ route, navigation }) => {
+  const { task,refetch } = route.params;
+    const { user } = useSelector((state) => state.auth);
+  
+
+  const [editTask, { isLoading }] = useUpdateTaskMutation();
+
+  const {
+    values,
+    handleChange,
+    handleBlur,
+    handleSubmit,
+    setFieldValue,
+    touched,
+    errors
+  } = useFormik({
+    initialValues: {
+      taskName: task?.title || "",
+      taskDescription: task?.description || "",
+      status: task?.status || "pending"
+    },
+    enableReinitialize: true,
+    validationSchema,
+    onSubmit: async (values) => {
+      const preparePayload = {
+        id: task._id,
+        title: values.taskName,
+        description: values.taskDescription,
+        status: values.status,
+        // to_date: "2025-07-20",
+      };
+
+       if (user?.type === "employee") {
+        preparePayload.companyId = user?.companyId; 
+      }
+      if (values?.assignedUsers?.length) {
+        preparePayload.userId = values?.assignedUsers?.join(", "); 
+      }
+
+      try {
+        const response = await editTask(preparePayload).unwrap();
+        console.log("RES",response);
+        if(response?.status==='success'){
+          showToast(response?.message || "Task updated successfully!")
+          refetch()
+          navigation.goBack(); 
+
+        }else{
+          showToast(response?.message)
+        }
+        
+      } catch (error) {
+        console.error("Error", error);
+        Alert.alert("Error", "Something went wrong");
+      }
+    }
+  });
 
   return (
     <Safewrapper>
-      <AppHeader title="Task Details" />
+      <AppHeader title={"Edit Task"} />
       <ScrollView contentContainerStyle={styles.container}>
-        {/* Task Header with Favorite & Edit Icon */}
-        <View style={styles.headerRow}>
-          <Text
-            style={[
-              styles.title,
-              {
-                color: taskData.task_color,
-                fontFamily: taskData.task_font_family
-              }
-            ]}
-          >
-            {taskData.title}
-          </Text>
-          <View style={styles.iconRow}>
-            {/* Edit Icon (Navigates to Edit Task Page) */}
-            <TouchableOpacity
-              onPress={() =>
-                navigation.navigate(RouterConstant.EDITTASK, {
-                  taskId: taskData._id
-                })}
-            >
-              <MaterialIcons name="edit" size={28} color="#4A90E2" />
-            </TouchableOpacity>
+        <CustomTextInput
+          label={"Task Name"}
+          placeholder={"Enter Task Name"}
+          value={values.taskName}
+          onChangeText={handleChange("taskName")}
+          onBlur={handleBlur("taskName")}
+          errorMessage={touched.taskName && errors.taskName}
+        />
 
-            {/* Favorite Icon */}
-            <TouchableOpacity>
-              <Ionicons
-                name={taskData.is_favorite ? "heart" : "heart-outline"}
-                size={28}
-                color={taskData.is_favorite ? "red" : "gray"}
-              />
-            </TouchableOpacity>
-          </View>
+        <CustomTextInput
+          label={"Task Description"}
+          placeholder={"Enter Task Description"}
+          value={values.taskDescription}
+          onChangeText={handleChange("taskDescription")}
+          onBlur={handleBlur("taskDescription")}
+          multiline
+          errorMessage={touched.taskDescription && errors.taskDescription}
+        />
+
+        <Text style={styles.label}>Task Status</Text>
+        <View style={styles.statusRow}>
+          {statusOptions.map((status) => {
+            const isSelected = values.status === status;
+            const iconMap = {
+              pending: "time-outline",
+              inprogress: "refresh-circle-outline",
+              completed: "checkmark-circle-outline"
+            };
+
+            return (
+              <TouchableOpacity
+                key={status}
+                style={[
+                  styles.statusChip,
+                  isSelected && styles.statusChipSelected
+                ]}
+                onPress={() => setFieldValue("status", status)}
+              >
+                <Ionicons
+                  name={iconMap[status]}
+                  size={20}
+                  color={isSelected ? "#fff" : "#555"}
+                  style={{ marginRight: 6 }}
+                />
+                <Text
+                  style={[
+                    styles.statusChipText,
+                    isSelected && styles.statusChipTextSelected
+                  ]}
+                >
+                  {status.toUpperCase()}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
         </View>
 
-        {/* Task Description */}
-        <View style={styles.card}>
-          <Text
-            style={[
-              styles.description,
-              {
-                color: taskData.description_color,
-                fontFamily: taskData.description_font_family
-              }
-            ]}
-          >
-            {taskData.description}
-          </Text>
-        </View>
+        {touched.status && errors.status && (
+          <Text style={styles.error}>{errors.status}</Text>
+        )}
 
-        {/* Task Details Section */}
-        <View style={styles.detailsContainer}>
-          <View style={styles.detailBox}>
-            <Text style={styles.detailTitle}>📅 Start Date</Text>
-            <Text style={styles.detailText}>
-              {new Date(taskData.from_date).toDateString()}
-            </Text>
-          </View>
-
-          <View style={styles.detailBox}>
-            <Text style={styles.detailTitle}>⏳ End Date</Text>
-            <Text style={styles.detailText}>
-              {new Date(taskData.to_date).toDateString()}
-            </Text>
-          </View>
-        </View>
-
-        {/* Priority & Status Section */}
-        <View style={styles.detailsContainer}>
-          <View
-            style={[
-              styles.badge,
-              taskData.priority === "high"
-                ? styles.highPriority
-                : styles.lowPriority
-            ]}
-          >
-            <Text style={styles.badgeText}>
-              ⚡ {taskData.priority.toUpperCase()}
-            </Text>
-          </View>
-
-          <View
-            style={[
-              styles.badge,
-              taskData.status === "pending"
-                ? styles.pendingStatus
-                : styles.completedStatus
-            ]}
-          >
-            <Text style={styles.badgeText}>
-              📌 {taskData.status.toUpperCase()}
-            </Text>
-          </View>
-        </View>
+        <CustomButton
+          title={"Update Task"}
+          onPress={handleSubmit}
+          colors={["#28a745", "#28a745"]}
+        />
+        <View style={{ height: 50 }} />
       </ScrollView>
     </Safewrapper>
   );
@@ -142,81 +166,46 @@ const styles = StyleSheet.create({
   container: {
     padding: 20
   },
-  headerRow: {
+  label: {
+    fontSize: 16,
+    fontWeight: "600",
+    marginTop: 10,
+    marginBottom: 8,
+    color: "#333"
+  },
+  statusRow: {
     flexDirection: "row",
     justifyContent: "space-between",
+    flexWrap: "wrap",
+    marginBottom: 8
+  },
+  statusChip: {
+    flexDirection: "row",
     alignItems: "center",
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    backgroundColor: "#f2f2f2",
+    marginRight: 10,
     marginBottom: 10
   },
-  iconRow: {
-    flexDirection: "row",
-    gap: 15
+  statusChipSelected: {
+    backgroundColor: "#007bff",
+    borderColor: "#007bff"
   },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    flex: 1
+  statusChipText: {
+    color: "#333",
+    fontSize: 14
   },
-  card: {
-    backgroundColor: "#1E1E1E",
-    padding: 15,
-    borderRadius: 10,
-    marginBottom: 15,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 3
-  },
-  description: {
-    fontSize: 16,
-    lineHeight: 22
-  },
-  detailsContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 15
-  },
-  detailBox: {
-    flex: 1,
-    backgroundColor: "#2A2A2A",
-    padding: 10,
-    borderRadius: 8,
-    marginHorizontal: 5
-  },
-  detailTitle: {
-    fontSize: 14,
-    fontWeight: "bold",
+  statusChipTextSelected: {
     color: "#fff",
-    marginBottom: 5
+    fontWeight: "bold"
   },
-  detailText: {
-    fontSize: 16,
-    color: "#ddd"
-  },
-  badge: {
-    paddingVertical: 8,
-    paddingHorizontal: 15,
-    borderRadius: 10,
-    alignItems: "center",
-    justifyContent: "center",
-    minWidth: 100
-  },
-  badgeText: {
-    fontSize: 14,
-    fontWeight: "bold",
-    color: "#fff"
-  },
-  highPriority: {
-    backgroundColor: "#E74C3C"
-  },
-  lowPriority: {
-    backgroundColor: "#2ECC71"
-  },
-  pendingStatus: {
-    backgroundColor: "#F39C12"
-  },
-  completedStatus: {
-    backgroundColor: "#27AE60"
+  error: {
+    color: "red",
+    fontSize: 13,
+    marginTop: 4
   }
 });

@@ -1,11 +1,12 @@
-import React, { useEffect } from "react";
-import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import React, { useEffect, useCallback } from "react";
+import { StyleSheet, Text, View } from "react-native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
+import { useDispatch } from "react-redux";
 import { Ionicons } from "@expo/vector-icons";
+
 import Safewrapper from "../shared/Safewrapper";
 import { useGetProfileQuery } from "../redux/services/apiService";
 import { showToast } from "../utils/Toast";
-import { useDispatch } from "react-redux";
 import { setIsLogin, setToken, setUser } from "../redux/reducers/authSlice";
 import { RouterConstant } from "../constants/RouterConstant";
 
@@ -16,11 +17,19 @@ const Home = () => {
   const {
     data: profileData,
     isLoading: isProfileLoading,
-    error
+    error,
+    refetch
   } = useGetProfileQuery();
 
+  // Refetch on screen focus
+  useFocusEffect(
+    useCallback(() => {
+      refetch();
+    }, [])
+  );
+
   useEffect(() => {
-    if (error?.status == 401) {
+    if (error?.status === 401) {
       console.log("User Logout here");
       showToast(error?.data?.message);
       dispatch(setIsLogin(false));
@@ -33,14 +42,10 @@ const Home = () => {
     }
   }, [error]);
 
-  console.log("error", error);
-  console.log("error....", error?.status);
-
   return (
     <Safewrapper>
       <View style={styles.container}>
         <Text style={styles.title}>Welcome to Akshify !!</Text>
-        {/* <Text style={styles.subtitle}>Explore and experience the best!</Text> */}
       </View>
     </Safewrapper>
   );

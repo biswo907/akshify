@@ -6,13 +6,14 @@ import ConfirmationModal from "../../shared/ConfirmationModal";
 import TaskCard from "./component/TaskCard";
 import EmptyComponent from "../../shared/EmptyComponent";
 import {
-  useUpdateTaskMutation,
-  useGetTaskQuery
+  useGetTaskQuery,
+  useUpdateTaskStatusMutation
 } from "../../redux/services/taskService";
 import { useSelector } from "react-redux";
 import { showToast } from "../../utils/Toast";
 import { RouterConstant } from "../../constants/RouterConstant";
 import { useNavigation } from "@react-navigation/native";
+import { TaskStatus } from "../../constants/TaskStatus";
 
 const MyTasks = ({ route }) => {
   const isFrom = route?.params?.isFrom || "";
@@ -24,8 +25,10 @@ const MyTasks = ({ route }) => {
 
   const { data, isLoading, refetch } = useGetTaskQuery();
 
+  console.log("TASK", data);
+
   const [updateTask, { isLoading: updateTaskLoading }] =
-    useUpdateTaskMutation();
+    useUpdateTaskStatusMutation();
 
   useEffect(() => {
     if (isFrom === RouterConstant.MYTASK) {
@@ -64,7 +67,7 @@ const MyTasks = ({ route }) => {
   };
 
   const handlePress = (task) => {
-    navigation.navigate(RouterConstant.TASKDETAILS, { task });
+    navigation.navigate(RouterConstant.TASKDETAILS, { task, refetch });
   };
 
   return (
@@ -80,9 +83,13 @@ const MyTasks = ({ route }) => {
           }
           renderItem={({ item }) => (
             <TaskCard
+              disbled={
+                TaskStatus?.COMPLETED === item?.status ||
+                TaskStatus?.EXPIRED === item?.status
+              }
               item={item}
               handleDelete={() => confirmDeleteTask(item)}
-              // onPress={() => handlePress(item)}
+              onPress={() => handlePress(item)}
             />
           )}
           ListEmptyComponent={
