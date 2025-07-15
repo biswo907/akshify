@@ -118,29 +118,43 @@ const TaskCard = ({ item, handleDelete, onPress, disbled }) => {
             </View>
           </View>
 
-          {item?.status === "completed" && (
+          {["completed", "in-progress", "deleted"].includes(item?.status) && (
             <>
               <View style={styles.metaRow}>
-                <Text style={styles.metaLabel}>Completed by: </Text>
+                <Text style={styles.metaLabel}>
+                  {item?.status === "completed"
+                    ? "Completed by:"
+                    : item?.status === "in-progress"
+                    ? "Updated by:"
+                    : "Deleted by:"}
+                </Text>
 
-                <View style={[styles.iconview]}>
+                <View style={styles.iconview}>
                   <FontAwesome6 name="user-tie" size={10} color={color} />
                   <Text style={[styles.badgeText, { color }]}>
-                    {item?.completedBy?.full_name?.toUpperCase() || "Unknown"}
+                    {item?.statusUpdatedBy?.full_name?.toUpperCase() ||
+                      "Unknown"}
                   </Text>
                 </View>
               </View>
-              <View style={styles.metaRow}>
-                <Text style={styles.metaLabel}>Completed on: </Text>
 
-                <View style={[styles.iconview]}>
+              <View style={styles.metaRow}>
+                <Text style={styles.metaLabel}>
+                  {item?.status === "completed"
+                    ? "Completed On:"
+                    : item?.status === "in-progress"
+                    ? "Updated On:"
+                    : "Deleted On:"}
+                </Text>
+
+                <View style={styles.iconview}>
                   <FontAwesome
                     name="calendar-check-o"
                     size={10}
                     color={color}
                   />
                   <Text style={[styles.badgeText, { color }]}>
-                    {moment(item.completedAt).format("MMM D, YYYY")}
+                    {moment(item.statusUpdatedAt).format("MMM D, YYYY")}
                   </Text>
                 </View>
               </View>

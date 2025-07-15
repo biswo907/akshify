@@ -24,6 +24,7 @@ import EditProfile from "../profile/EditProfile";
 import Employees from "../employee/Employees";
 import CreateEmployee from "../employee/CreateEmployee";
 import DeletedTask from "../Task/DeletedTask";
+import EditEmployee from "../employee/EditEmployee";
 
 const Stack = createNativeStackNavigator();
 
@@ -136,6 +137,11 @@ export const RouteStack = () => {
         <Stack.Screen
           name={RouterConstant.CREATEEMPLOYEE}
           component={CreateEmployee}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name={RouterConstant.EDITEMPLOYEE}
+          component={EditEmployee}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>

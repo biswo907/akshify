@@ -51,31 +51,47 @@ export const CreateUserValidationSchema = Yup.object().shape({
     .min(6, "Password must be at least 6 characters")
 });
 
-export const editProfileValidationSchema = Yup.object().shape({
-  fullName: Yup.string().required("Full name is required"),
+export const getEditProfileSchema = changePassword =>
+  Yup.object().shape({
+    fullName: Yup.string().required("Full Name is required"),
+    mobile: Yup.string()
+      .required("Mobile is required")
+      .matches(/^[0-9]{10}$/, "Enter a valid 10-digit mobile number"),
+    userName: Yup.string().required("User Name is required"),
+    email: Yup.string()
+      .email("Enter a valid email")
+      .required("Email is required"),
+    password: changePassword
+      ? Yup.string()
+          .min(6, "Password must be at least 6 characters")
+          .required("Password is required")
+      : Yup.string().notRequired(),
+    confirm_password: changePassword
+      ? Yup.string()
+          .oneOf([Yup.ref("password"), null], "Passwords must match")
+          .required("Confirm Password is required")
+      : Yup.string().notRequired()
+  });
 
-  mobile: Yup.string()
-    .matches(/^[0-9]{10}$/, "Enter a valid 10-digit mobile number")
-    .required("Mobile number is required"),
-
-  userName: Yup.string()
-    .min(3, "Username must be at least 3 characters")
-    .required("Username is required"),
-
-  email: Yup.string()
-    .email("Enter a valid email")
-    .required("Email is required"),
-
-  password: Yup.string()
-    .min(6, "Password must be at least 6 characters")
-    .required(),
-
-  confirm_password: Yup.string()
-    .required("Confirm password is required")
-    .oneOf([Yup.ref("password")], "Passwords must match")
-});
 export const createTaskValidationSchema = Yup.object().shape({
   taskName: Yup.string().required("Task name is required"),
   taskDescription: Yup.string().required("Task Description is required"),
   date: Yup.string().required("Date is required")
 });
+
+export const EditEmployeeValidationSchema = changePassword =>
+  Yup.object().shape({
+    fullName: Yup.string().required("Full Name is required"),
+    userName: Yup.string().required("User Name is required"),
+    mobile: Yup.string()
+      .required("Mobile is required")
+      .matches(/^[0-9]{10}$/, "Enter a valid 10-digit mobile number"),
+    email: Yup.string()
+      .email("Enter a valid email")
+      .required("Email is required"),
+    password: changePassword
+      ? Yup.string()
+          .min(6, "Password must be at least 6 characters")
+          .required("Password is required")
+      : Yup.string().notRequired()
+  });

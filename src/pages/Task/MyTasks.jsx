@@ -25,7 +25,7 @@ const MyTasks = ({ route }) => {
 
   const { data, isLoading, refetch } = useGetTaskQuery();
 
-  console.log("TASK", data);
+  console.log("TASK", data?.tasks?.[0]);
 
   const [updateTask, { isLoading: updateTaskLoading }] =
     useUpdateTaskStatusMutation();

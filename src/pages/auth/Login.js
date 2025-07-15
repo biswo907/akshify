@@ -28,8 +28,10 @@ const SigninScreen = () => {
   
 
   const initialValues = {
-    email: "biswo1@gmail.com",
-    password: "123456",
+    // email: "biswo1@gmail.com",
+    // password: "123456",
+    email: "",
+    password: "",
   };
 
  const [login, { isLoading }] = useLoginMutation();

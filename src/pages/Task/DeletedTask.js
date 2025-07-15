@@ -1,5 +1,5 @@
 import { ActivityIndicator, FlatList, StyleSheet, Text, View } from "react-native";
-import React from "react";
+import React, { useEffect } from "react";
 import { useGetDeletedTaskQuery } from "../../redux/services/taskService";
 import Safewrapper from "../../shared/Safewrapper";
 import AppHeader from "../../shared/Header";
@@ -8,7 +8,10 @@ import EmptyComponent from "../../shared/EmptyComponent";
 
 const DeletedTask = () => {
   const { data, isLoading, refetch } = useGetDeletedTaskQuery();
-  console.log("DELETE",data);
+  // console.log("DELETE",data);
+  useEffect(()=>{
+    refetch()
+  },[])
   
   return (
        <Safewrapper>

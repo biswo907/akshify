@@ -74,7 +74,6 @@ const TaskDetailsScreen = ({ route, navigation }) => {
 
       try {
         const response = await editTask(preparePayload).unwrap();
-        console.log("RES", response);
         if (response?.status === "success") {
           showToast(response?.message || "Task updated successfully!");
           refetch();
@@ -83,8 +82,7 @@ const TaskDetailsScreen = ({ route, navigation }) => {
           showToast(response?.message);
         }
       } catch (error) {
-        console.error("Error", error);
-        Alert.alert("Error", "Something went wrong");
+        Alert.alert("Error",error?.data?.message || "Something went wrong");
       }
     }
   });
