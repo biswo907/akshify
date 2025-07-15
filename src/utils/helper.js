@@ -48,3 +48,18 @@ export const handleNavigate = (route, params = {}) => {
 //   const handleNavigate = (route, params = {}) => {
 //     navigation.navigate(route, params);
 //   };
+
+export const getGreetingMessage = () => {
+  const now = new Date();
+  const hour = now.getHours();
+
+  if (hour >= 5 && hour < 12) {
+    return "Good Morning";
+  } else if (hour >= 12 && hour < 17) {
+    return "Good Afternoon";
+  } else if (hour >= 17 && hour < 21) {
+    return "Good Evening";
+  } else {
+    return "Good Night";
+  }
+};

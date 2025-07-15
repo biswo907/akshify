@@ -1,11 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
   StyleSheet,
   ScrollView,
   Alert,
-  TouchableOpacity
+  TouchableOpacity,
+  Platform
 } from "react-native";
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -17,6 +18,8 @@ import { showToast } from "../../utils/Toast";
 import { Ionicons } from "@expo/vector-icons";
 import { useUpdateTaskMutation } from "../../redux/services/taskService";
 import { useSelector } from "react-redux";
+import moment from "moment";
+import DateTimePicker from "@react-native-community/datetimepicker";
 
 const statusOptions = ["in-progress", "completed"];
 
@@ -27,9 +30,11 @@ const validationSchema = Yup.object().shape({
 });
 
 const TaskDetailsScreen = ({ route, navigation }) => {
-  const { task,refetch } = route.params;
-    const { user } = useSelector((state) => state.auth);
-  
+  const { task, refetch } = route.params;
+  const { user } = useSelector((state) => state.auth);
+  const [showDatePicker, setShowDatePicker] = useState(false);
+
+  console.log("TASK", task);
 
   const [editTask, { isLoading }] = useUpdateTaskMutation();
 
@@ -45,7 +50,9 @@ const TaskDetailsScreen = ({ route, navigation }) => {
     initialValues: {
       taskName: task?.title || "",
       taskDescription: task?.description || "",
-      status: task?.status || "pending"
+      status: task?.status || "pending",
+      date: task?.to_date,
+      prev_date: task?.to_date
     },
     enableReinitialize: true,
     validationSchema,
@@ -55,28 +62,26 @@ const TaskDetailsScreen = ({ route, navigation }) => {
         title: values.taskName,
         description: values.taskDescription,
         status: values.status,
-        // to_date: "2025-07-20",
+        to_date: values?.date,
       };
 
-       if (user?.type === "employee") {
-        preparePayload.companyId = user?.companyId; 
+      if (user?.type === "employee") {
+        preparePayload.companyId = user?.companyId;
       }
       if (values?.assignedUsers?.length) {
-        preparePayload.userId = values?.assignedUsers?.join(", "); 
+        preparePayload.userId = values?.assignedUsers?.join(", ");
       }
 
       try {
         const response = await editTask(preparePayload).unwrap();
-        console.log("RES",response);
-        if(response?.status==='success'){
-          showToast(response?.message || "Task updated successfully!")
-          refetch()
-          navigation.goBack(); 
-
-        }else{
-          showToast(response?.message)
+        console.log("RES", response);
+        if (response?.status === "success") {
+          showToast(response?.message || "Task updated successfully!");
+          refetch();
+          navigation.goBack();
+        } else {
+          showToast(response?.message);
         }
-        
       } catch (error) {
         console.error("Error", error);
         Alert.alert("Error", "Something went wrong");
@@ -106,6 +111,42 @@ const TaskDetailsScreen = ({ route, navigation }) => {
           multiline
           errorMessage={touched.taskDescription && errors.taskDescription}
         />
+
+        <CustomTextInput
+          label={"Date"}
+          placeholder={
+            values?.date
+              ? moment(values?.date).format("MMMM D, YYYY")
+              : "Select Task Date"
+          }
+          editable={false}
+          onPress={() => setShowDatePicker(true)}
+        />
+
+        {showDatePicker && (
+          <DateTimePicker
+            value={
+              values?.date
+                ? new Date(moment(values?.date).format("YYYY-MM-DD"))
+                : new Date()
+            }
+            mode="date"
+            //  minimumDate={new Date(values?.prev_date)}
+            minimumDate={new Date(new Date().setDate(new Date().getDate() + 1))}
+            display={Platform.OS === "ios" ? "spinner" : "default"}
+            onChange={(event, selectedDate) => {
+              setShowDatePicker(false);
+              if (event.type === "dismissed") {
+                setFieldValue("date", values?.prev_date);
+              } else if (selectedDate) {
+                setFieldValue("date", selectedDate);
+                console.log(selectedDate);
+
+                // setTaskDate(moment(selectedDate).format("YYYY-MM-DD"));
+              }
+            }}
+          />
+        )}
 
         <Text style={styles.label}>Task Status</Text>
         <View style={styles.statusRow}>
@@ -153,6 +194,7 @@ const TaskDetailsScreen = ({ route, navigation }) => {
           title={"Update Task"}
           onPress={handleSubmit}
           colors={["#28a745", "#28a745"]}
+          isLoading={isLoading}
         />
         <View style={{ height: 50 }} />
       </ScrollView>
@@ -171,7 +213,7 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     marginTop: 10,
     marginBottom: 8,
-    color: "#333"
+    color: "white"
   },
   statusRow: {
     flexDirection: "row",

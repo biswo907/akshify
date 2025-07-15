@@ -22,6 +22,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDispatch, useSelector } from "react-redux";
 import { logOutUser } from "../../redux/reducers/authSlice";
 import { RouterConstant } from "../../constants/RouterConstant";
+import { getGreetingMessage } from "../../utils/helper";
 
 const ProfileScreen = () => {
   const insets = useSafeAreaInsets();
@@ -43,6 +44,14 @@ const ProfileScreen = () => {
       subTitle: "Organize and track tasks",
       icon: "user",
       route: RouterConstant.MYTASK,
+      isShow: true
+    },
+    {
+      id: 19,
+      title: "Deleted Tasks",
+      subTitle: "Organize Deleted tasks",
+      icon: "user",
+      route: RouterConstant.DELETETASK,
       isShow: true
     },
     
@@ -174,7 +183,8 @@ const ProfileScreen = () => {
 
             <View>
               <Text style={{ color: "white", fontSize: 16, fontWeight: "600" }}>
-                Hello !! {user?.type == "company" ? "company" : "user"}
+                Hello !! {getGreetingMessage()}
+                {/* {user?.type == "company" ? "company" : "user"} */}
               </Text>
               <Text style={{ color: "white", fontSize: 14, fontWeight: "400" }}>
                 {user?.full_name}

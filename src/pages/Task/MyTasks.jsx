@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, View, FlatList } from "react-native";
+import { StyleSheet, View, FlatList, ActivityIndicator } from "react-native";
 import Safewrapper from "../../shared/Safewrapper";
 import AppHeader from "../../shared/Header";
 import ConfirmationModal from "../../shared/ConfirmationModal";
@@ -34,6 +34,7 @@ const MyTasks = ({ route }) => {
     if (isFrom === RouterConstant.MYTASK) {
       refetch();
     }
+    refetch();
   }, [isFrom]);
 
   const confirmDeleteTask = (task) => {
@@ -73,42 +74,56 @@ const MyTasks = ({ route }) => {
   return (
     <Safewrapper>
       <AppHeader title="My Tasks" />
-      <View style={styles.container}>
-        <FlatList
-          showsVerticalScrollIndicator={false}
-          data={data?.tasks || []}
-          keyExtractor={(item) => item._id}
-          contentContainerStyle={
-            (data?.tasks?.length || 0) === 0 ? styles.emptyListContainer : null
-          }
-          renderItem={({ item }) => (
-            <TaskCard
-              disbled={
-                TaskStatus?.COMPLETED === item?.status ||
-                TaskStatus?.EXPIRED === item?.status
-              }
-              item={item}
-              handleDelete={() => confirmDeleteTask(item)}
-              onPress={() => handlePress(item)}
-            />
-          )}
-          ListEmptyComponent={
-            <EmptyComponent
-              title="No Tasks Available!"
-              description="Stay productive by adding a new task."
-            />
-          }
-        />
+      {isLoading ? (
+        <View
+          style={{
+            height: "90%",
+            alignItems: "center",
+            justifyContent: "center"
+          }}
+        >
+          <ActivityIndicator color={"white"} size={"large"} />
+        </View>
+      ) : (
+        <View style={styles.container}>
+          <FlatList
+            showsVerticalScrollIndicator={false}
+            data={data?.tasks || []}
+            keyExtractor={(item) => item._id}
+            contentContainerStyle={
+              (data?.tasks?.length || 0) === 0
+                ? styles.emptyListContainer
+                : null
+            }
+            renderItem={({ item }) => (
+              <TaskCard
+                disbled={
+                  TaskStatus?.COMPLETED === item?.status ||
+                  TaskStatus?.EXPIRED === item?.status
+                }
+                item={item}
+                handleDelete={() => confirmDeleteTask(item)}
+                onPress={() => handlePress(item)}
+              />
+            )}
+            ListEmptyComponent={
+              <EmptyComponent
+                title="No Tasks Available!"
+                description="Stay productive by adding a new task."
+              />
+            }
+          />
 
-        <ConfirmationModal
-          isVisible={isModalVisible}
-          handleCancel={handleCloseModal}
-          title="Confirm Delete"
-          description={`Are you sure you want to delete this task? ${selectedTask?.title}`}
-          handleConfirm={handleDeleteTask}
-          isLoading={updateTaskLoading}
-        />
-      </View>
+          <ConfirmationModal
+            isVisible={isModalVisible}
+            handleCancel={handleCloseModal}
+            title="Confirm Delete"
+            description={`Are you sure you want to delete this task? ${selectedTask?.title}`}
+            handleConfirm={handleDeleteTask}
+            isLoading={updateTaskLoading}
+          />
+        </View>
+      )}
     </Safewrapper>
   );
 };

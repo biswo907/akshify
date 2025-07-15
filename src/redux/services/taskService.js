@@ -25,6 +25,9 @@ export const taskApi = createApi({
     getTask: builder.query({
       query: () => "/tasks/get-all-task"
     }),
+    getDeletedTask: builder.query({
+      query: () => "/tasks/get-deleted-task"
+    }),
     updateTaskStatus: builder.mutation({
       query: (payload) => ({
         url: `tasks/update-task-status`,
@@ -44,6 +47,7 @@ export const taskApi = createApi({
 export const {
   useCreateTaskMutation,
   useGetTaskQuery,
+  useGetDeletedTaskQuery,
   useUpdateTaskStatusMutation,
   useUpdateTaskMutation,
 } = taskApi;

@@ -18,5 +18,5 @@ export const RouterConstant = {
   CREATEEMPLOYEE: "createemployee",
   EMPLOYEES: "employees",
   TASKDETAILS: "taskdetails",
-  EDITTASK: "edittask"
+  DELETETASK: "deletetask"
 };

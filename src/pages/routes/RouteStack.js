@@ -19,11 +19,11 @@ import ThemeSettingsScreen from "../Theme";
 import LanguageScreen from "../Language";
 import { useGetActiveTasksQuery } from "../../redux/services/taskService";
 import TaskDetailsScreen from "../Task/TaskDetails";
-import EditTaskScreen from "../Task/EditTask";
 import SettingsScreen from "../settings/Setting";
 import EditProfile from "../profile/EditProfile";
 import Employees from "../employee/Employees";
 import CreateEmployee from "../employee/CreateEmployee";
+import DeletedTask from "../Task/DeletedTask";
 
 const Stack = createNativeStackNavigator();
 
@@ -129,8 +129,8 @@ export const RouteStack = () => {
           options={{ headerShown: false }}
         />
         <Stack.Screen
-          name={RouterConstant.EDITTASK}
-          component={EditTaskScreen}
+          name={RouterConstant.DELETETASK}
+          component={DeletedTask}
           options={{ headerShown: false }}
         />
         <Stack.Screen

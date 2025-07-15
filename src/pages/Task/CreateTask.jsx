@@ -154,7 +154,9 @@ const CreateTask = () => {
                       : new Date()
                   }
                   mode="date"
-                  // minimumDate={new Date()}
+                  minimumDate={
+                    new Date(new Date().setDate(new Date().getDate() + 1))
+                  }
                   display={Platform.OS === "ios" ? "spinner" : "default"}
                   onChange={(event, selectedDate) => {
                     setShowDatePicker(false);

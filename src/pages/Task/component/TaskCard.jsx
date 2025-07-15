@@ -10,6 +10,7 @@ import {
 import moment from "moment";
 import { MaterialIcons } from "@expo/vector-icons";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
+import FontAwesome from "@expo/vector-icons/FontAwesome";
 
 // Status colors and icons
 const statusMeta = {
@@ -62,22 +63,20 @@ const TaskCard = ({ item, handleDelete, onPress, disbled }) => {
               {item.status?.toUpperCase()}
             </Text>
           </View>
-          <View style={[styles.badge]}>
-            <FontAwesome6 name="user-tie" size={14} color={color} />
-            <Text style={[styles.badgeText, { color }]}>
-              {item.createdBy?.full_name?.toUpperCase()}
-            </Text>
-          </View>
         </View>
 
         {/* Date */}
-        <View style={styles.dateRow}>
-          <MaterialIcons name="event" size={16} color={color} />
-          <Text style={styles.dateLabel}>Due: </Text>
-          <Text style={[styles.dateText, { color }]}>
-            {moment(item.to_date).format("MMM D, YYYY")}
-          </Text>
-        </View>
+        {item?.status !== "completed" && item?.status !== "deleted" && (
+          <View style={styles.metaRow}>
+            <Text style={styles.metaLabel}>Expires On: </Text>
+            <View style={[styles.iconview]}>
+              <FontAwesome name="calendar-check-o" size={10} color={color} />
+              <Text style={[styles.badgeText, { color }]}>
+                {moment(item.to_date).format("MMM D, YYYY")}
+              </Text>
+            </View>
+          </View>
+        )}
 
         {/* Example Assigned User Avatars (with initials) */}
         {/* {item.userIds?.length > 0 && (
@@ -95,6 +94,59 @@ const TaskCard = ({ item, handleDelete, onPress, disbled }) => {
             )}
           </View>
         )} */}
+
+        {/* Bottom Info Section */}
+        <View style={styles.metaContainer}>
+          <View style={styles.metaRow}>
+            <Text style={styles.metaLabel}>Created by: </Text>
+            <View style={[styles.iconview]}>
+              <FontAwesome6 name="user-tie" size={10} color={color} />
+              <Text style={[styles.badgeText, { color }]}>
+                {item.createdBy?.full_name?.toUpperCase()}
+              </Text>
+            </View>
+          </View>
+
+          <View style={styles.metaRow}>
+            <Text style={styles.metaLabel}>Created on: </Text>
+
+            <View style={[styles.iconview]}>
+              <FontAwesome name="calendar-check-o" size={10} color={color} />
+              <Text style={[styles.badgeText, { color }]}>
+                {moment(item.createdAt).format("MMM D, YYYY")}
+              </Text>
+            </View>
+          </View>
+
+          {item?.status === "completed" && (
+            <>
+              <View style={styles.metaRow}>
+                <Text style={styles.metaLabel}>Completed by: </Text>
+
+                <View style={[styles.iconview]}>
+                  <FontAwesome6 name="user-tie" size={10} color={color} />
+                  <Text style={[styles.badgeText, { color }]}>
+                    {item?.completedBy?.full_name?.toUpperCase() || "Unknown"}
+                  </Text>
+                </View>
+              </View>
+              <View style={styles.metaRow}>
+                <Text style={styles.metaLabel}>Completed on: </Text>
+
+                <View style={[styles.iconview]}>
+                  <FontAwesome
+                    name="calendar-check-o"
+                    size={10}
+                    color={color}
+                  />
+                  <Text style={[styles.badgeText, { color }]}>
+                    {moment(item.completedAt).format("MMM D, YYYY")}
+                  </Text>
+                </View>
+              </View>
+            </>
+          )}
+        </View>
       </View>
 
       {/* Delete Icon */}
@@ -148,9 +200,14 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     gap: 6
   },
+  iconview: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6
+  },
   badgeText: {
     fontSize: 12,
-    fontWeight: "600"
+    fontWeight: "500"
   },
   dateRow: {
     flexDirection: "row",
@@ -197,5 +254,27 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: "#555",
     fontWeight: "600"
+  },
+  metaContainer: {
+    marginTop: 10,
+    paddingTop: 10,
+    borderTopWidth: 1,
+    borderTopColor: "#eee"
+  },
+  metaRow: {
+    flexDirection: "row",
+    marginBottom: 4
+  },
+  metaLabel: {
+    fontSize: 12,
+    color: "#888",
+    fontWeight: "600",
+    width: 100
+  },
+  metaValue: {
+    fontSize: 12,
+    color: "#333",
+    fontWeight: "500",
+    flexShrink: 1
   }
 });
