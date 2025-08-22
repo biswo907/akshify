@@ -10,7 +10,8 @@
     "clean": "rm -rf ./node_modules && rm -rf ./android && rm -rf ./ios && rm -rf ./web-build",
     "apk:dev": "eas build --platform android --profile development",
     "apk:prev": "eas build --platform android --profile preview",
-    "apk:prod": "eas build --platform android --profile production"
+    "apk:prod": "eas build --platform android --profile production",
+    "apk:update": "eas update --channel preview"
   },
   "dependencies": {
     "@expo/metro-runtime": "~5.0.4",
@@ -21,8 +22,8 @@
     "@react-navigation/native": "^7.0.14",
     "@react-navigation/native-stack": "^7.2.0",
     "@reduxjs/toolkit": "^2.6.0",
-    "expo": "^53.0.13",
-    "expo-dev-client": "~5.2.2",
+    "expo": "53.0.19",
+    "expo-dev-client": "~5.2.4",
     "expo-linear-gradient": "~14.1.5",
     "expo-status-bar": "~2.2.3",
     "formik": "^2.4.6",
@@ -30,14 +31,15 @@
     "moment": "^2.30.1",
     "react": "19.0.0",
     "react-dom": "19.0.0",
-    "react-native": "0.79.4",
+    "react-native": "0.79.5",
     "react-native-modal": "^14.0.0-rc.1",
     "react-native-safe-area-context": "5.4.0",
     "react-native-screens": "~4.11.1",
     "react-native-web": "^0.20.0",
     "react-redux": "^9.2.0",
     "redux-persist": "^6.0.0",
-    "yup": "^1.6.1"
+    "yup": "^1.6.1",
+    "expo-updates": "~0.28.17"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"

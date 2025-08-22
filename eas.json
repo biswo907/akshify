@@ -19,6 +19,7 @@
         "buildType": "apk"
       },
       "distribution": "internal",
+      "channel": "preview",
       "env": {
         "APP_ENV": "preview"
       }
@@ -28,6 +29,7 @@
         "buildType": "apk",
         "autoIncrement": true
       },
+      "channel": "production",
       "env": {
         "APP_ENV": "production"
       }

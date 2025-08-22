@@ -25,11 +25,21 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "plugins": [["@react-native-google-signin/google-signin"]],
+    "plugins": [
+      [
+        "@react-native-google-signin/google-signin"
+      ]
+    ],
     "extra": {
       "eas": {
-        "projectId": "1d30d482-a8a7-46c2-baa9-d6e3a5d517fc"
+        "projectId": "73099bba-52b7-4d05-9cb0-ccd1b168d219"
       }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/73099bba-52b7-4d05-9cb0-ccd1b168d219"
     }
   }
 }
